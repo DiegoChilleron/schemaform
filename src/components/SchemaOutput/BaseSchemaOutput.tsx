@@ -2,9 +2,9 @@ import { FormData, ImageDimensions } from "../../types";
 
 export interface SchemaLabels {
   domainPlaceholder: string;
-  urlPlaceholder: string;
   imageLogoPlaceholder: string;
   telephonePlaceholder: string[];
+  contactTypePlaceholder: string[];
   availableLanguage: string[];
   emailPlaceholder: string;
   authorURLPlaceholder: string;
@@ -56,13 +56,22 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
       "@context": "https://schema.org",
       "@type": "WebPage",
       name: title || "",
-      url: url || labels.urlPlaceholder,
+      url: url || "",
       description: description || "",
-      inLanguage: "es",
+      inLanguage: language,
       mainEntityOfPage: {
         "@type": "WebSite",
         name: "NeuronUP",
         url: domain || labels.domainPlaceholder,
+      },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: labels.imageLogoPlaceholder,
+      },
+      about: {
+        "@type": "MedicalTherapy",
+        name: labels.aboutNamePlaceholder,
+        description: labels.aboutDescriptionPlaceholder,
       },
       mainEntity: {
         "@type": "MedicalOrganization",
@@ -79,7 +88,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
         contactPoint: {
           "@type": "ContactPoint",
           telephone: labels.telephonePlaceholder,
-          contactType: ["Customer Service", "Sales"],
+          contactType: labels.contactTypePlaceholder,
           areaServed: "Worldwide",
           availableLanguage: labels.availableLanguage,
           email: labels.emailPlaceholder,
@@ -92,15 +101,6 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
           postalCode: "26006",
           addressCountry: "ES",
         },
-      },
-      primaryImageOfPage: {
-        "@type": "ImageObject",
-        url: labels.imageLogoPlaceholder,
-      },
-      about: {
-        "@type": "MedicalTherapy",
-        name: labels.aboutNamePlaceholder,
-        description: labels.aboutDescriptionPlaceholder,
       },
       hasPart: {
         "@type": "WebApplication",
@@ -123,13 +123,17 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
 
       },
     };
-  } else {
+  } else if (type === "Article" || type === "NewsArticle" || type === "BlogPosting") {
     // Estructura para Article, NewsArticle y BlogPosting
     const articleType = type || "Article";
     const publishedDate = datePublished ? `${datePublished}:00+01:00` : "";
+
+    const filteredModifiedDates = dateModified.filter((d) => d).map((d) => `${d}:00+01:00`);
     const modifiedDates =
-      dateModified.length > 0
-        ? dateModified.filter((d) => d).map((d) => `${d}:00+01:00`)
+      filteredModifiedDates.length > 0
+        ? filteredModifiedDates.length === 1
+          ? filteredModifiedDates[0]
+          : filteredModifiedDates
         : undefined;
 
     const imageObject = {
@@ -158,7 +162,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
       "@type": articleType,
       mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": url || labels.urlPlaceholder,
+        "@id": url || "",
       },
       headline: title || "",
       description: description || "",
@@ -177,20 +181,11 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
           url: labels.imageLogoPlaceholder,
         },
       },
-      ...(aggregateRating &&
-        viewCount &&
-        ratingValue && {
-        aggregateRating: {
-          "@type": "AggregateRating",
-          reviewCount: viewCount,
-          ratingValue: ratingValue,
-        },
-      }),
     };
 
     const schemaWebPage = {
       "@type": "WebPage",
-      url: url || labels.urlPlaceholder,
+      url: url || "",
       mainEntityOfPage: {
         "@type": "WebSite",
         name: "NeuronUP",
@@ -226,17 +221,25 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
           postalCode: "26006",
           addressCountry: "ES",
         },
-        ...(aggregateRating &&
-          viewCount &&
-          ratingValue && {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            reviewCount: viewCount,
-            ratingValue: ratingValue,
-            "bestRating": "5",
-            "worstRating": "1"
-          },
-        }),
+        hasPart: {
+          "@type": "WebApplication",
+          name: "NeuronUP",
+          applicationCategory: "Software as a Service",
+          operatingSystem: "All",
+          url: "https://app.neuronup.com/",
+          description: labels.haspartDescriptionPlaceholder,
+          ...(aggregateRating &&
+            viewCount &&
+            ratingValue && {
+            aggregateRating: {
+              "@type": "AggregateRating",
+              reviewCount: viewCount,
+              ratingValue: ratingValue,
+              "bestRating": "5",
+              "worstRating": "1"
+            },
+          }),
+        },
       },
     };
 
@@ -245,6 +248,9 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
       "@context": "https://schema.org",
       "@graph": [schemaArticle, schemaWebPage],
     };
+  } else {
+    // Estructura por defecto
+    schemaObject = `Selecciona un tipo`;
   }
 
   const schemaStringRaw = `<script type="application/ld+json">\n${JSON.stringify(
@@ -253,10 +259,14 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     2
   )}\n</script>`;
 
-  // Opcional: formateo sencillo de arrays en el JSON para mejor legibilidad
+  // Arrays en una linea
   const schemaString = schemaStringRaw
     .replace(
       /("telephone": )\[\s+([^\]]+?)\s+\]/g,
+      (_match, key, value) => `${key}[ ${value.replace(/\s+/g, " ")} ]`
+    )
+    .replace(
+      /("contactType": )\[\s+([^\]]+?)\s+\]/g,
       (_match, key, value) => `${key}[ ${value.replace(/\s+/g, " ")} ]`
     )
     .replace(
@@ -266,12 +276,12 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
 
   return (
     <div className="SchemaOutput">
-    <div className="grid grid-cols-3 py-4"><h2 className="col-span-2">{header}</h2>
-    <button onClick={() => navigator.clipboard.writeText(schemaString)} className="justify-self-end">
-      Copiar todo
-    </button>
+      <div className="grid grid-cols-3 py-4"><h2 className="col-span-2">{header}</h2>
+        <button onClick={() => navigator.clipboard.writeText(schemaString)} className="justify-self-end">
+          Copiar todo
+        </button>
+      </div>
+      <pre>{schemaString}</pre>
     </div>
-    <pre>{schemaString}</pre>
-  </div>
   );
 };

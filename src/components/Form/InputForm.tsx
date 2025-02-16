@@ -1,6 +1,9 @@
-
-import { ChangeEvent, useEffect, useCallback } from "react";
+import React, { ChangeEvent, useEffect, useCallback } from "react";
 import { FormData } from "../../types";
+import { ArticleFormInputs } from "./SchemaTypes/ArticleFormInputs";
+import { PageFormInputs } from "./SchemaTypes/PageFormInputs";
+import { EventFormInputs } from "./SchemaTypes/EventFormInputs";
+import { FAQFormInputs } from "./SchemaTypes/FAQFormInputs";
 
 interface InputFormProps {
   formData: FormData;
@@ -27,17 +30,19 @@ export const InputForm: React.FC<InputFormProps> = ({
     }
     const img = new Image();
     img.src = formData.urlImage;
-    img.onload = () => onImageLoad({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onload = () =>
+      onImageLoad({ width: img.naturalWidth, height: img.naturalHeight });
     img.onerror = () => onImageLoad(null);
   }, [formData.urlImage, onImageLoad]);
 
-  // Extrae un slug de la URL para completar el campo "seccion"
+  // Extrae un slug de la URL para completar el campo "section"
   useEffect(() => {
     const urlParts = formData.url.split("/").filter((part) => part !== "");
     const lastSlug = urlParts[urlParts.length - 2] || "";
     if (lastSlug) {
       const formattedSlug = lastSlug.replace(/-/g, " ");
-      const capitalizedSlug = formattedSlug.charAt(0).toUpperCase() + formattedSlug.slice(1);
+      const capitalizedSlug =
+        formattedSlug.charAt(0).toUpperCase() + formattedSlug.slice(1);
       onInputChange({
         target: { name: "section", value: capitalizedSlug },
       } as ChangeEvent<HTMLInputElement>);
@@ -47,229 +52,40 @@ export const InputForm: React.FC<InputFormProps> = ({
   return (
     <form>
       <div className="inputForm__div">
-        <label htmlFor="url">URL:</label>
-        <input
-          className="w-full"
-          type="text"
-          id="url"
-          name="url"
-          value={formData.url}
-          onChange={onInputChange}
-          placeholder="Introduce la URL de la página"
-        />
-      </div>
-
-      <div className="inputForm__div">
         <label htmlFor="type">Tipo:</label>
         <select id="type" name="type" value={formData.type} onChange={onInputChange}>
+        <option value="">Selecciona...</option>
           <option value="Article">Article</option>
           <option value="NewsArticle">NewsArticle</option>
           <option value="BlogPosting">BlogPosting</option>
           <option value="Pagina">Pagina</option>
+          <option value="Events">Evento</option>
+          <option value="FAQ">FAQ</option>
         </select>
       </div>
 
-      <div className="inputForm__div">
-        <label htmlFor="title">Título:</label>
-        <input
-          className="w-full"
-          type="text"
-          id="title"
-          name="title"
-          value={formData.title}
-          onChange={onInputChange}
-          placeholder="Introduce el título"
+      {(formData.type === "Article" ||
+        formData.type === "NewsArticle" ||
+        formData.type === "BlogPosting") && (
+        <ArticleFormInputs
+          formData={formData}
+          onInputChange={onInputChange}
+          handleImageBlur={handleImageBlur}
+          onDateModifiedChange={onDateModifiedChange}
+          onAuthorRRSSChange={onAuthorRRSSChange}
         />
-      </div>
+      )}
 
-      <div className="inputForm__div">
-        <label htmlFor="description">Descripción:</label>
-        <input
-          className="w-full"
-          type="text"
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={onInputChange}
-          placeholder="Introduce la descripción"
-        />
-      </div>
+      {formData.type === "Pagina" && (
+        <PageFormInputs formData={formData} onInputChange={onInputChange} />
+      )}
 
-      {formData.type !== "Pagina" ? (
-        <>
-          <div className="inputForm__div">
-            <label htmlFor="datePublished">Fecha de publicación:</label>
-            <input
-              type="datetime-local"
-              id="datePublished"
-              name="datePublished"
-              value={formData.datePublished}
-              onChange={onInputChange}
-            />
-          </div>
+      {formData.type === "Events" && (
+        <EventFormInputs formData={formData} onInputChange={onInputChange} />
+      )}
 
-          {/* Gestión de fechas de modificación */}
-          <div className="py-2">
-            <label>Fechas de modificación:</label>
-            {formData.dateModified.map((date, index) => (
-              <div key={index} className="p-2">
-                <input
-                  type="datetime-local"
-                  value={date}
-                  onChange={(e) => {
-                    const newDates = [...formData.dateModified];
-                    newDates[index] = e.target.value;
-                    onDateModifiedChange(newDates);
-                  }}
-                  placeholder="Introduce la fecha de modificación"
-                />
-                <button
-                  type="button"
-                  onClick={() => onDateModifiedChange(formData.dateModified.filter((_, i) => i !== index))}
-                >
-                  Eliminar
-                </button>
-              </div>
-            ))}
-            <button type="button" onClick={() => onDateModifiedChange([...formData.dateModified, ""])}>
-              Añadir fecha de modificación
-            </button>
-          </div>
-
-          <div className="inputForm__div">
-            <label htmlFor="section">Sección:</label>
-            <input
-              type="text"
-              id="section"
-              name="section"
-              value={formData.section}
-              onChange={onInputChange}
-              placeholder="Introduce la sección"
-            />
-          </div>
-
-          <div className="inputForm__div">
-            <label htmlFor="urlImage">URL Imagen de portada:</label>
-            <input
-              className="w-full"
-              type="text"
-              id="urlImage"
-              name="urlImage"
-              value={formData.urlImage}
-              onChange={onInputChange}
-              onBlur={handleImageBlur}
-              placeholder="Introduce la URL de la imagen"
-            />
-          </div>
-
-          {/* Datos del autor */}
-          <div className="inputFormdiv__author">
-            <div className="inputForm__div flex justify-between">
-              <label htmlFor="authorType">Tipo de Autor:</label>
-              <select id="authorType" name="authorType" value={formData.authorType} onChange={onInputChange}>
-                <option value="Organization">Organization</option>
-                <option value="Person">Person</option>
-              </select>
-
-              <label htmlFor="authorName">Nombre del Autor:</label>
-              <input
-                type="text"
-                id="authorName"
-                name="authorName"
-                value={formData.authorName}
-                onChange={onInputChange}
-                placeholder="Introduce el nombre del autor"
-              />
-            </div>
-
-            <div className="inputForm__div">
-              <label htmlFor="authorURL">URL del autor:</label>
-              <input
-                className="w-full"
-                type="text"
-                id="authorURL"
-                name="authorURL"
-                value={formData.authorURL}
-                onChange={onInputChange}
-                placeholder="Introduce la URL del autor"
-              />
-            </div>
-
-            <div className="py-2">
-              <label>RRSS del autor:</label>
-              {formData.authorRRSS.map((rrss, index) => (
-                <div key={index} className="p-2">
-                  <input
-                    className="w-[50%]"
-                    type="text"
-                    value={rrss}
-                    onChange={(e) => {
-                      const newRRSS = [...formData.authorRRSS];
-                      newRRSS[index] = e.target.value;
-                      onAuthorRRSSChange(newRRSS);
-                    }}
-                    placeholder="Introduce el perfil de red social del autor"
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onAuthorRRSSChange(formData.authorRRSS.filter((_, i) => i !== index))
-                    }
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              ))}
-              <button type="button" onClick={() => onAuthorRRSSChange([...formData.authorRRSS, ""])}>
-                Añadir RRSS
-              </button>
-            </div>
-          </div>
-        </>
-      ) : (<></>)}
-
-
-      <div className="inputForm__div">
-        <label htmlFor="aggregateRating">
-          <input
-            type="checkbox"
-            id="aggregateRating"
-            name="aggregateRating"
-            checked={formData.aggregateRating}
-            onChange={onInputChange}
-          />
-          Añadir valoraciones de Google
-        </label>
-      </div>
-
-      {formData.aggregateRating && (
-        <div className="inputForm__div  flex justify-between">
-          <div>
-            <label htmlFor="viewCount">Número de valoraciones:</label>
-            <input
-              type="number"
-              id="viewCount"
-              name="viewCount"
-              value={formData.viewCount}
-              onChange={onInputChange}
-              placeholder="100"
-            />
-          </div>
-          <div>
-            <label htmlFor="ratingValue">Puntuación:</label>
-            <input
-              type="number"
-              id="ratingValue"
-              name="ratingValue"
-              value={formData.ratingValue}
-              onChange={onInputChange}
-              placeholder="4,9"
-              step="0.1"
-              min="0"
-              max="5"
-            />
-          </div>
-        </div>
+      {formData.type === "FAQ" && (
+        <FAQFormInputs formData={formData} onInputChange={onInputChange} />
       )}
     </form>
   );

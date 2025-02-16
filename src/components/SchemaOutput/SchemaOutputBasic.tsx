@@ -5,9 +5,9 @@ import { FormData, ImageDimensions } from "../../types";
 
 const labelsBasic: SchemaLabels = {
   domainPlaceholder: "",
-  urlPlaceholder: "",
   imageLogoPlaceholder: "",
   telephonePlaceholder: [],
+  contactTypePlaceholder: [],
   availableLanguage: [],
   emailPlaceholder: "",
   authorURLPlaceholder: "",
@@ -22,7 +22,7 @@ export const SchemaOutputBasic: React.FC<{
 }> = (props) => (
   <BaseSchemaOutput
     {...props}
-    language="es"
+    language=""
     labels={labelsBasic}
     header="Código Schema Generado"
   />

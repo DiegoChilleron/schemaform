@@ -4,11 +4,11 @@ import { FormData, ImageDimensions } from "../../types";
 
 const labelsFR: SchemaLabels = {
   domainPlaceholder: "https://neuronup.com/fr/",
-  urlPlaceholder: "https://neuronup.com/author/inigo/",
-  imageLogoPlaceholder: "https://neuronup.com/wp-content/uploads/2021/07/logo-neuronup-core.svg",
-  telephonePlaceholder: ["+34-941-123-456", "+44-203-695-8524"],
-  availableLanguage: ["es", "en", "fr", "pt"],
-  emailPlaceholder: "correo",
+  imageLogoPlaceholder: "https://neuronup.com/fr/wp-content/uploads/2024/10/logo-neuronup-core.svg",
+  telephonePlaceholder: ["+34-941-123-456", "+33-745-893-378"],
+  contactTypePlaceholder: ["Customer Service", "Sales"],
+  availableLanguage: ["fr", "es", "en", "pt"],
+  emailPlaceholder: "neuronup.fr@neuronup.com",
   authorURLPlaceholder: "https://neuronup.com/fr/author/inigo/",
   aboutNamePlaceholder: "Stimulation Cognitive",
   aboutDescriptionPlaceholder:"Plateforme d'exercices et d'outils pour la stimulation cognitive et la réhabilitation neuropsychologique",
