@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+h1 {
+    @apply text-white font-sans text-xl md:text-3xl font-stretch-expanded font-semibold text-center py-8;
+}
+
+h2 {
+    @apply text-center text-sm font-semibold pb-4;
+}
+
+body {
+    @apply py-14 px-4 bg-[#01AAC9];
+}
+
+.app__container {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-8 items-start;
+}
+
+.SchemaOutput {
+    @apply rounded-xl py-6 px-4 md:px-10 bg-white text-xs text-left overflow-hidden text-clip;
+}
+
+form {
+    @apply rounded-xl p-6 bg-white text-sm;
+}
+
+.inputForm__div {
+    @apply py-2 flex items-center;
+}
+
+
+.inputFormdiv__author {
+    @apply border border-gray-200 p-3 my-5 rounded-sm;
+}
+
+input {
+    @apply bg-gray-100 rounded-sm p-2 mx-3;
+}
+
+select {
+    @apply border border-gray-100 p-2 mx-3 rounded-sm;
+}
+
+button {
+    @apply border border-gray-400 rounded-lg py-1 px-2 mx-3 hover:bg-gray-700 hover:text-white;
+}
