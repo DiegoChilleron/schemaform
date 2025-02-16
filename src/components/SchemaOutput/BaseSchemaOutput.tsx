@@ -1,11 +1,16 @@
-
 import { FormData, ImageDimensions } from "../../types";
 
 export interface SchemaLabels {
+  domainPlaceholder: string;
   urlPlaceholder: string;
   imageLogoPlaceholder: string;
   telephonePlaceholder: string[];
   availableLanguage: string[];
+  emailPlaceholder: string;
+  authorURLPlaceholder: string;
+  aboutNamePlaceholder: string;
+  aboutDescriptionPlaceholder: string;
+  haspartDescriptionPlaceholder: string;
 }
 
 export interface BaseSchemaOutputProps {
@@ -26,12 +31,13 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
   const {
     url,
     type,
-    titulo,
-    descripcion,
+    title,
+    description,
+    domain,
     datePublished,
     dateModified,
-    seccion,
-    urlImagen,
+    section,
+    urlImage,
     authorType,
     authorName,
     authorURL,
@@ -41,85 +47,81 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     ratingValue,
   } = formData;
 
-  // Función para determinar defaults según la URL
-  const getDefaultValues = (pageUrl: string) => {
-    if (pageUrl.startsWith("https://neuronup.us")) {
-      return {
-        authorURLDefault: "https://neuronup.us/author/neuronup/",
-        emailDefault: "support@neuronup.us",
-      };
-    } else {
-      return {
-        authorURLDefault: "https://neuronup.com/author/inigo/",
-        emailDefault: "soporte@neuronup.com",
-      };
-    }
-  };
-
-  const { authorURLDefault, emailDefault } = getDefaultValues(url);
-
   let schemaObject: any = {};
+
 
   if (type === "Pagina") {
     // Estructura específica para "Pagina"
     schemaObject = {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": titulo || "",
-      "url": url || labels.urlPlaceholder,
-      "description": descripcion || "",
-      "inLanguage": "es",
-      "mainEntityOfPage": {
+      name: title || "",
+      url: url || labels.urlPlaceholder,
+      description: description || "",
+      inLanguage: "es",
+      mainEntityOfPage: {
         "@type": "WebSite",
-        "name": "NeuronUP",
-        "url": "https://neuronup.com"
+        name: "NeuronUP",
+        url: domain || labels.domainPlaceholder,
       },
-      "mainEntity": {
+      mainEntity: {
         "@type": "MedicalOrganization",
-        "name": "NeuronUP",
-        "url": "https://neuronup.com",
-        "logo": labels.imageLogoPlaceholder,
-        "sameAs": [
+        name: "NeuronUP",
+        url: domain || labels.domainPlaceholder,
+        logo: labels.imageLogoPlaceholder,
+        sameAs: [
           "https://www.facebook.com/NeuronUP",
           "https://x.com/NeuronUP",
           "https://www.linkedin.com/company/neuronup",
           "https://www.youtube.com/user/NeuronUp",
-          "https://www.instagram.com/NeuronUP"
+          "https://www.instagram.com/NeuronUP",
         ],
-        "contactPoint": {
+        contactPoint: {
           "@type": "ContactPoint",
-          "telephone": labels.telephonePlaceholder,
-          "contactType": ["Customer Service", "Sales"],
-          "areaServed": "Worldwide",
-          "availableLanguage": labels.availableLanguage,
-          "email": emailDefault
+          telephone: labels.telephonePlaceholder,
+          contactType: ["Customer Service", "Sales"],
+          areaServed: "Worldwide",
+          availableLanguage: labels.availableLanguage,
+          email: labels.emailPlaceholder,
         },
-        "address": {
+        address: {
           "@type": "PostalAddress",
-          "streetAddress": "C. Piqueras, 31",
-          "addressLocality": "Logroño",
-          "addressRegion": "La Rioja",
-          "postalCode": "26006",
-          "addressCountry": "ES"
-        }
+          streetAddress: "C. Piqueras, 31",
+          addressLocality: "Logroño",
+          addressRegion: "La Rioja",
+          postalCode: "26006",
+          addressCountry: "ES",
+        },
       },
-      "primaryImageOfPage": {
+      primaryImageOfPage: {
         "@type": "ImageObject",
-        "url": "https://neuronup.com/plantilla-neuronup/wp-content/uploads/2024/10/logo-neuronup-core.svg"
+        url: labels.imageLogoPlaceholder,
       },
-      "about": {
+      about: {
         "@type": "MedicalTherapy",
-        "name": "Estimulación Cognitiva",
-        "description": "Plataforma de ejercicios y herramientas de estimulación cognitiva y rehabilitación neuropsicológica"
+        name: labels.aboutNamePlaceholder,
+        description: labels.aboutDescriptionPlaceholder,
       },
-      "hasPart": {
+      hasPart: {
         "@type": "WebApplication",
-        "name": "NeuronUP",
-        "applicationCategory": "Software as a Service",
-        "operatingSystem": "All",
-        "url": "https://app.neuronup.com/",
-        "description": "Accede a ejercicios de estimulación cognitiva altamente personalizables, herramientas para planificar y medir los resultados de tus intervenciones."
-      }
+        name: "NeuronUP",
+        applicationCategory: "Software as a Service",
+        operatingSystem: "All",
+        url: "https://app.neuronup.com/",
+        description: labels.haspartDescriptionPlaceholder,
+        ...(aggregateRating &&
+          viewCount &&
+          ratingValue && {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            reviewCount: viewCount,
+            ratingValue: ratingValue,
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+        }),
+
+      },
     };
   } else {
     // Estructura para Article, NewsArticle y BlogPosting
@@ -132,7 +134,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
 
     const imageObject = {
       "@type": "ImageObject",
-      url: urlImagen || "",
+      url: urlImage || "",
       width: imageDimensions ? imageDimensions.width : 1200,
       height: imageDimensions ? imageDimensions.height : 675,
     };
@@ -148,21 +150,22 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     const author = {
       "@type": authorType || "Organization",
       name: authorName || "NeuronUP",
-      url: authorURL || authorURLDefault,
+      url: authorURL || labels.authorURLPlaceholder,
       ...(sameAs && { sameAs }),
     };
 
-    schemaObject = {
+    const schemaArticle = {
       "@type": articleType,
       mainEntityOfPage: {
         "@type": "WebPage",
         "@id": url || labels.urlPlaceholder,
       },
-      headline: titulo || "",
-      description: descripcion || "",
+      headline: title || "",
+      description: description || "",
       datePublished: publishedDate,
-      ...(modifiedDates && modifiedDates.length > 0 && { dateModified: modifiedDates }),
-      articleSection: seccion || "",
+      ...(modifiedDates &&
+        modifiedDates.length > 0 && { dateModified: modifiedDates }),
+      articleSection: section || "",
       inLanguage: language,
       image: imageObject,
       author: author,
@@ -173,6 +176,38 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
           "@type": "ImageObject",
           url: labels.imageLogoPlaceholder,
         },
+      },
+      ...(aggregateRating &&
+        viewCount &&
+        ratingValue && {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          reviewCount: viewCount,
+          ratingValue: ratingValue,
+        },
+      }),
+    };
+
+    const schemaWebPage = {
+      "@type": "WebPage",
+      url: url || labels.urlPlaceholder,
+      mainEntityOfPage: {
+        "@type": "WebSite",
+        name: "NeuronUP",
+        url: "https://neuronup.com",
+      },
+      mainEntity: {
+        "@type": "MedicalOrganization",
+        name: "NeuronUP",
+        url: "https://neuronup.com",
+        logo: labels.imageLogoPlaceholder,
+        sameAs: [
+          "https://www.facebook.com/NeuronUP",
+          "https://x.com/NeuronUP",
+          "https://www.linkedin.com/company/neuronup",
+          "https://www.youtube.com/user/NeuronUp",
+          "https://www.instagram.com/NeuronUP",
+        ],
         contactPoint: [
           {
             "@type": "ContactPoint",
@@ -180,7 +215,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
             contactType: ["Customer Service", "Sales"],
             areaServed: "Worldwide",
             availableLanguage: labels.availableLanguage,
-            email: emailDefault,
+            email: labels.emailPlaceholder,
           },
         ],
         address: {
@@ -191,69 +226,29 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
           postalCode: "26006",
           addressCountry: "ES",
         },
+        ...(aggregateRating &&
+          viewCount &&
+          ratingValue && {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            reviewCount: viewCount,
+            ratingValue: ratingValue,
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+        }),
       },
-      ...(aggregateRating && viewCount && ratingValue && {
-        aggregateRating: {
-          "@type": "AggregateRating",
-          reviewCount: viewCount,
-          ratingValue: ratingValue,
-        },
-      }),
+    };
+
+    // Crea el objeto final
+    schemaObject = {
+      "@context": "https://schema.org",
+      "@graph": [schemaArticle, schemaWebPage],
     };
   }
 
-  // Si no es "Pagina", se añade un objeto WebPage extra usando "@graph"
-  const schemaWebPage = {
-    "@type": "WebPage",
-    url: url || labels.urlPlaceholder,
-    mainEntityOfPage: {
-      "@type": "WebSite",
-      name: "NeuronUP",
-      url: "https://neuronup.com",
-    },
-    mainEntity: {
-      "@type": "MedicalOrganization",
-      name: "NeuronUP",
-      url: "https://neuronup.com",
-      logo: labels.imageLogoPlaceholder,
-      sameAs: [
-        "https://www.facebook.com/NeuronUP",
-        "https://x.com/NeuronUP",
-        "https://www.linkedin.com/company/neuronup",
-        "https://www.youtube.com/user/NeuronUp",
-        "https://www.instagram.com/NeuronUP",
-      ],
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          telephone: labels.telephonePlaceholder,
-          contactType: ["Customer Service", "Sales"],
-          areaServed: "Worldwide",
-          availableLanguage: labels.availableLanguage,
-          email: emailDefault,
-        },
-      ],
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: "C. Piqueras, 31",
-        addressLocality: "Logroño",
-        addressRegion: "La Rioja",
-        postalCode: "26006",
-        addressCountry: "ES",
-      },
-    },
-  };
-
-  const finalSchemaObject =
-    type === "Pagina"
-      ? schemaObject
-      : {
-          "@context": "https://schema.org",
-          "@graph": [schemaObject, schemaWebPage],
-        };
-
   const schemaStringRaw = `<script type="application/ld+json">\n${JSON.stringify(
-    finalSchemaObject,
+    schemaObject,
     null,
     2
   )}\n</script>`;
@@ -271,8 +266,12 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
 
   return (
     <div className="SchemaOutput">
-      <h2>{header}</h2>
-      <pre>{schemaString}</pre>
+    <div className="grid grid-cols-3 py-4"><h2 className="col-span-2">{header}</h2>
+    <button onClick={() => navigator.clipboard.writeText(schemaString)} className="justify-self-end">
+      Copiar todo
+    </button>
     </div>
+    <pre>{schemaString}</pre>
+  </div>
   );
 };

@@ -5,10 +5,10 @@ h1 {
 }
 
 h2 {
-    @apply text-center text-sm font-semibold pb-4;
+    @apply text-center text-base font-semibold;
 }
 
-body {
+html {
     @apply py-14 px-4 bg-[#01AAC9];
 }
 
@@ -21,7 +21,7 @@ body {
 }
 
 form {
-    @apply rounded-xl p-6 bg-white text-sm;
+    @apply rounded-xl p-6 bg-white text-xs sm:text-sm;
 }
 
 .inputForm__div {

@@ -1,5 +1,5 @@
-// src/App.tsx
 import { useState, ChangeEvent, useCallback } from "react";
+
 import { InputForm } from "./components/Form/InputForm";
 import { getSchemaOutputComponent } from "./helpers/getSchemaOutputComponent";
 import { FormData, ImageDimensions } from "./types.ts";
@@ -8,14 +8,15 @@ export const App: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     url: "",
     type: "",
-    titulo: "",
-    descripcion: "",
+    title: "",
+    description: "",
+    domain: "",
     datePublished: "",
     dateModified: [],
-    seccion: "",
-    urlImagen: "",
+    section: "",
+    urlImage: "",
     authorType: "Organization",
-    authorName: "NeuronUP",
+    authorName: "",
     authorURL: "",
     authorRRSS: [],
     aggregateRating: false,
@@ -28,11 +29,18 @@ export const App: React.FC = () => {
   // Manejador general que procesa correctamente checkboxes y otros tipos de input.
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-      const { name, value, type, checked } = e.target;
-      setFormData((prev) => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : value,
-      }));
+      const target = e.target;
+      if (target.type === "checkbox") {
+        setFormData((prev) => ({
+          ...prev,
+          [target.name]: (target as HTMLInputElement).checked,
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          [target.name]: target.value,
+        }));
+      }
     },
     []
   );
@@ -45,12 +53,12 @@ export const App: React.FC = () => {
     setFormData((prev) => ({ ...prev, authorRRSS: newRRSS }));
   }, []);
 
-  // Selecciona el componente de SchemaOutput según la URL
+  // Selecciona el componente de SchemaOutput según la URL.
   const SchemaOutputComponent = getSchemaOutputComponent(formData.url);
 
   return (
     <div className="app">
-      <h1>Generador de Schema JSON</h1>
+      <h1>Generador de código estructurado Schema (JSON-LD)</h1>
       <div className="app__container">
         <InputForm
           formData={formData}
@@ -64,4 +72,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
