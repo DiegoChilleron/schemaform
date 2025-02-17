@@ -49,7 +49,6 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
 
   let schemaObject: any = {};
 
-
   if (type === "Pagina") {
     // Estructura específica para "Pagina"
     schemaObject = {
@@ -112,23 +111,28 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
         ...(aggregateRating &&
           viewCount &&
           ratingValue && {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            reviewCount: viewCount,
-            ratingValue: ratingValue,
-            "bestRating": "5",
-            "worstRating": "1"
-          },
-        }),
-
+            aggregateRating: {
+              "@type": "AggregateRating",
+              reviewCount: viewCount,
+              ratingValue: ratingValue,
+              bestRating: "5",
+              worstRating: "1"
+            },
+          }),
       },
     };
-  } else if (type === "Article" || type === "NewsArticle" || type === "BlogPosting") {
+  } else if (
+    type === "Article" ||
+    type === "NewsArticle" ||
+    type === "BlogPosting"
+  ) {
     // Estructura para Article, NewsArticle y BlogPosting
     const articleType = type || "Article";
     const publishedDate = datePublished ? `${datePublished}:00+01:00` : "";
 
-    const filteredModifiedDates = dateModified.filter((d) => d).map((d) => `${d}:00+01:00`);
+    const filteredModifiedDates = dateModified
+      .filter((d) => d)
+      .map((d) => `${d}:00+01:00`);
     const modifiedDates =
       filteredModifiedDates.length > 0
         ? filteredModifiedDates.length === 1
@@ -221,32 +225,33 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
           postalCode: "26006",
           addressCountry: "ES",
         },
-        hasPart: {
-          "@type": "WebApplication",
-          name: "NeuronUP",
-          applicationCategory: "Software as a Service",
-          operatingSystem: "All",
-          url: "https://app.neuronup.com/",
-          description: labels.haspartDescriptionPlaceholder,
-          ...(aggregateRating &&
-            viewCount &&
-            ratingValue && {
-            aggregateRating: {
-              "@type": "AggregateRating",
-              reviewCount: viewCount,
-              ratingValue: ratingValue,
-              "bestRating": "5",
-              "worstRating": "1"
-            },
-          }),
-        },
       },
     };
 
-    // Crea el objeto final
+    const schemaWebApplication = {
+      "@type": "WebApplication",
+      name: "NeuronUP",
+      applicationCategory: "Software as a Service",
+      operatingSystem: "All",
+      url: "https://app.neuronup.com/",
+      description: labels.haspartDescriptionPlaceholder,
+      ...(aggregateRating &&
+        viewCount &&
+        ratingValue && {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            reviewCount: viewCount,
+            ratingValue: ratingValue,
+            bestRating: "5",
+            worstRating: "1"
+          },
+        }),
+    };
+
+    // Crea el objeto final con @graph
     schemaObject = {
       "@context": "https://schema.org",
-      "@graph": [schemaArticle, schemaWebPage],
+      "@graph": [schemaArticle, schemaWebPage, schemaWebApplication],
     };
   } else {
     // Estructura por defecto
@@ -259,7 +264,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     2
   )}\n</script>`;
 
-  // Arrays en una linea
+  // Arrays en una línea
   const schemaString = schemaStringRaw
     .replace(
       /("telephone": )\[\s+([^\]]+?)\s+\]/g,
@@ -276,8 +281,12 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
 
   return (
     <div className="SchemaOutput">
-      <div className="grid grid-cols-3 py-4"><h2 className="col-span-2">{header}</h2>
-        <button onClick={() => navigator.clipboard.writeText(schemaString)} className="justify-self-end">
+      <div className="grid grid-cols-3 py-4">
+        <h2 className="col-span-2">{header}</h2>
+        <button
+          onClick={() => navigator.clipboard.writeText(schemaString)}
+          className="justify-self-end"
+        >
           Copiar todo
         </button>
       </div>

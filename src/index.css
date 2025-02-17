@@ -34,7 +34,7 @@ form {
 }
 
 input {
-    @apply bg-gray-100 rounded-sm p-2 mx-3;
+    @apply bg-gray-100 rounded-sm p-2 mx-3 caret-[#01AAC9];
 }
 
 select {
@@ -42,5 +42,5 @@ select {
 }
 
 button {
-    @apply border border-gray-400 rounded-lg py-1 px-2 mx-3 hover:bg-gray-700 hover:text-white;
+    @apply border border-gray-400 rounded-lg py-1 px-2 mx-3 hover:bg-gray-500 active:bg-gray-500 active:text-white hover:text-white;
 }
