@@ -16,6 +16,16 @@ export interface FormData {
     aggregateRating: boolean;
     viewCount: string;
     ratingValue: string;
+    eventURL?: string;
+    eventName?: string;
+    eventDescription?: string;
+    startDate?: string;
+    endDate?: string;
+    eventImage?: string;
+    performer?: string;
+    eventStatus?: string;
+    question?: string;
+    answer?: string;
   }
   
   export interface ImageDimensions {

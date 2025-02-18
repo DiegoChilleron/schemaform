@@ -54,19 +54,17 @@ export const InputForm: React.FC<InputFormProps> = ({
       <div className="inputForm__div">
         <label htmlFor="type">Tipo:</label>
         <select id="type" name="type" value={formData.type} onChange={onInputChange}>
-        <option value="">Selecciona...</option>
+          <option value="">Selecciona...</option>
           <option value="Article">Article</option>
           <option value="NewsArticle">NewsArticle</option>
           <option value="BlogPosting">BlogPosting</option>
           <option value="Pagina">Pagina</option>
-          <option value="Events">Evento</option>
+          <option value="Event">Evento</option>
           <option value="FAQ">FAQ</option>
         </select>
       </div>
 
-      {(formData.type === "Article" ||
-        formData.type === "NewsArticle" ||
-        formData.type === "BlogPosting") && (
+      {(formData.type === "Article" || formData.type === "NewsArticle" || formData.type === "BlogPosting") && (
         <ArticleFormInputs
           formData={formData}
           onInputChange={onInputChange}
@@ -80,7 +78,7 @@ export const InputForm: React.FC<InputFormProps> = ({
         <PageFormInputs formData={formData} onInputChange={onInputChange} />
       )}
 
-      {formData.type === "Events" && (
+      {formData.type === "Event" && (
         <EventFormInputs formData={formData} onInputChange={onInputChange} />
       )}
 

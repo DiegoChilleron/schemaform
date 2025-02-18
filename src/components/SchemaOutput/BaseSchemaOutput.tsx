@@ -111,14 +111,14 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
         ...(aggregateRating &&
           viewCount &&
           ratingValue && {
-            aggregateRating: {
-              "@type": "AggregateRating",
-              reviewCount: viewCount,
-              ratingValue: ratingValue,
-              bestRating: "5",
-              worstRating: "1"
-            },
-          }),
+          aggregateRating: {
+            "@type": "AggregateRating",
+            reviewCount: viewCount,
+            ratingValue: ratingValue,
+            bestRating: "5",
+            worstRating: "1"
+          },
+        }),
       },
     };
   } else if (
@@ -238,14 +238,14 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
       ...(aggregateRating &&
         viewCount &&
         ratingValue && {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            reviewCount: viewCount,
-            ratingValue: ratingValue,
-            bestRating: "5",
-            worstRating: "1"
-          },
-        }),
+        aggregateRating: {
+          "@type": "AggregateRating",
+          reviewCount: viewCount,
+          ratingValue: ratingValue,
+          bestRating: "5",
+          worstRating: "1"
+        },
+      }),
     };
 
     // Crea el objeto final con @graph
@@ -253,16 +253,68 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
       "@context": "https://schema.org",
       "@graph": [schemaArticle, schemaWebPage, schemaWebApplication],
     };
+
+  } else if (type === "Event") {
+    // Estructura para Event
+    const startDate = formData.startDate ? `${formData.startDate}:00+01:00` : "";
+    const endDate = formData.endDate ? `${formData.endDate}:00+01:00` : "";
+
+    const schemaEvent = {
+      "@type": "Event",
+      name: formData.eventName || "",
+      description: formData.eventDescription || "",
+      startDate,
+      endDate,
+      location: {
+        "@type": "VirtualLocation",
+        url: formData.eventURL || "",
+      },
+      image: formData.eventImage || "",
+      performer: {
+        "@type": "Person",
+        "name": formData.performer || "",
+      },
+      eventStatus: formData.eventStatus || "",
+    };
+
+    schemaObject = {
+      "@context": "https://schema.org",
+      "@graph": [schemaEvent],
+    };
+
+  } else if (type === "FAQ") {
+    // Estructura para FAQ
+    schemaObject = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: formData.question ||"",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: formData.answer ||"",
+          },
+        },
+      ],
+    };
   } else {
     // Estructura por defecto
-    schemaObject = `Selecciona un tipo`;
+    schemaObject = "Selecciona un tipo";
   }
 
-  const schemaStringRaw = `<script type="application/ld+json">\n${JSON.stringify(
-    schemaObject,
-    null,
-    2
-  )}\n</script>`;
+  let schemaStringRaw = "";
+
+  // Si schemaObject es un objeto, lo convertimos a JSON. Si es un string (caso "Selecciona un tipo"), lo mostramos tal cual.
+  if (typeof schemaObject === "object") {
+    schemaStringRaw = `<script type="application/ld+json">\n${JSON.stringify(
+      schemaObject,
+      null,
+      2
+    )}\n</script>`;
+  } else {
+    schemaStringRaw = schemaObject; // "Selecciona un tipo"
+  }
 
   // Arrays en una línea
   const schemaString = schemaStringRaw

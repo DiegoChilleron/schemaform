@@ -48,14 +48,27 @@ export const ArticleFormInputs: React.FC<ArticleFormInputsProps> = ({
 
       <div className="inputForm__div">
         <label htmlFor="description">Descripción:</label>
-        <input
+        <textarea
           className="w-full"
-          type="text"
           id="description"
           name="description"
           value={formData.description}
           onChange={onInputChange}
           placeholder="Introduce la descripción"
+        />
+      </div>
+
+      <div className="inputForm__div w-full">
+        <label htmlFor="urlImage">URL Imagen:</label>
+        <input
+          className="w-[70%]"
+          type="text"
+          id="urlImage"
+          name="urlImage"
+          value={formData.urlImage}
+          onChange={onInputChange}
+          onBlur={handleImageBlur}
+          placeholder="Introduce la URL de la imagen de portada"
         />
       </div>
 
@@ -107,31 +120,21 @@ export const ArticleFormInputs: React.FC<ArticleFormInputsProps> = ({
       <div className="inputForm__div">
         <label htmlFor="section">Sección:</label>
         <input
+        className="w-full"
           type="text"
           id="section"
           name="section"
           value={formData.section}
           onChange={onInputChange}
-          placeholder="Introduce la sección"
+          placeholder="Introduce la sección (se autocompleta con la URL)"
         />
       </div>
 
-      <div className="inputForm__div">
-        <label htmlFor="urlImage">URL Imagen de portada:</label>
-        <input
-          className="w-full"
-          type="text"
-          id="urlImage"
-          name="urlImage"
-          value={formData.urlImage}
-          onChange={onInputChange}
-          onBlur={handleImageBlur}
-          placeholder="Introduce la URL de la imagen"
-        />
-      </div>
+
 
       <div className="inputFormdiv__author">
-        <div className="inputForm__div flex justify-between">
+        <div className="inputForm__div flex flex-col md:flex-row justify-between">
+        <div>
           <label htmlFor="authorType">Tipo de Autor:</label>
           <select
             id="authorType"
@@ -142,7 +145,8 @@ export const ArticleFormInputs: React.FC<ArticleFormInputsProps> = ({
             <option value="Organization">Organization</option>
             <option value="Person">Person</option>
           </select>
-
+          </div>
+          <div>
           <label htmlFor="authorName">Nombre del Autor:</label>
           <input
             type="text"
@@ -152,6 +156,7 @@ export const ArticleFormInputs: React.FC<ArticleFormInputsProps> = ({
             onChange={onInputChange}
             placeholder="Introduce el nombre del autor"
           />
+          </div>
         </div>
 
         <div className="inputForm__div">
