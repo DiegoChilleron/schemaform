@@ -76,7 +76,7 @@ export const PageFormInputs: React.FC<PageFormInputsProps> = ({
               name="viewCount"
               value={formData.viewCount}
               onChange={onInputChange}
-              placeholder="100"
+              placeholder="Introduce el número de valoraciones"
             />
           </div>
           <div>
@@ -87,7 +87,7 @@ export const PageFormInputs: React.FC<PageFormInputsProps> = ({
               name="ratingValue"
               value={formData.ratingValue}
               onChange={onInputChange}
-              placeholder="4,9"
+              placeholder="Introdcue la puntuación"
               step="0.1"
               min="0"
               max="5"

@@ -19,9 +19,9 @@ export const App: React.FC = () => {
     authorName: "",
     authorURL: "",
     authorRRSS: [],
-    aggregateRating: false,
-    viewCount: "",
-    ratingValue: ""
+    aggregateRating: true,
+    viewCount: "121",
+    ratingValue: "4,9"
   });
 
   const [imageDimensions, setImageDimensions] = useState<ImageDimensions | null>(null);

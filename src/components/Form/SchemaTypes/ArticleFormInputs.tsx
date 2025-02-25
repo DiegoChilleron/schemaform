@@ -231,7 +231,7 @@ export const ArticleFormInputs: React.FC<ArticleFormInputsProps> = ({
               name="viewCount"
               value={formData.viewCount}
               onChange={onInputChange}
-              placeholder="100"
+              placeholder="121"
             />
           </div>
           <div>
