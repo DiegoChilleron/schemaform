@@ -42,5 +42,5 @@ select {
 }
 
 button {
-    @apply border border-gray-400 rounded-lg py-1 px-2 mx-3 hover:bg-gray-200 active:bg-[#01AAC9] active:text-white active:border-white hover:text-white;
+    @apply border border-gray-400 rounded-lg py-1 px-2 mx-3 hover:bg-gray-200 active:bg-[#01AAC9] active:text-white active:border-white;
 }
