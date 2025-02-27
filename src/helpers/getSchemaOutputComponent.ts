@@ -14,12 +14,12 @@ export const getSchemaOutputComponent = (
   url: string
 ): React.FC<{ formData: FormData; imageDimensions: ImageDimensions | null }> => {
   if (url.startsWith("https://neuronup.us")) return SchemaNeuronUPEN;
-  if (url.startsWith("https://neuronup.com/br")) return SchemaNeuronUPBR;
-  if (url.startsWith("https://neuronup.com/fr")) return SchemaNeuronUPFR;
-  if (url.startsWith("https://neuronup.com/it")) return SchemaNeuronUPIT;
-  if (url.startsWith("https://neuronup.com/de")) return SchemaNeuronUPDE;  
-  if (url.startsWith("https://neuronup.com/ru")) return SchemaNeuronUPRU;
-  if (url.startsWith("https://neuronup.com/ar")) return SchemaNeuronUPAR;
+  if (url.startsWith("https://neuronup.com/br/")) return SchemaNeuronUPBR;
+  if (url.startsWith("https://neuronup.com/fr/")) return SchemaNeuronUPFR;
+  if (url.startsWith("https://neuronup.com/it/")) return SchemaNeuronUPIT;
+  if (url.startsWith("https://neuronup.com/de/")) return SchemaNeuronUPDE;  
+  if (url.startsWith("https://neuronup.com/ru/")) return SchemaNeuronUPRU;
+  if (url.startsWith("https://neuronup.com/ar/")) return SchemaNeuronUPAR;
   if (url.startsWith("https://neuronup.com")) return SchemaNeuronUPES;
   return SchemaOutputBasic;
 };

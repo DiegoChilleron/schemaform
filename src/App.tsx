@@ -4,27 +4,35 @@ import { InputForm } from "./components/Form/InputForm";
 import { getSchemaOutputComponent } from "./helpers/getSchemaOutputComponent";
 import { FormData, ImageDimensions } from "./types.ts";
 
-export const App: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    url: "",
-    type: "",
-    title: "",
-    description: "",
-    domain: "",
-    datePublished: "",
-    dateModified: [],
-    section: "",
-    urlImage: "",
-    authorType: "Organization",
-    authorName: "",
-    authorURL: "",
-    authorRRSS: [],
-    aggregateRating: true,
-    viewCount: "121",
-    ratingValue: "4.9"
-  });
+// Definir los valores iniciales del formulario
+const initialFormData: FormData = {
+  url: "",
+  type: "",
+  title: "",
+  description: "",
+  domain: "",
+  datePublished: "",
+  dateModified: [],
+  section: "",
+  urlImage: "",
+  authorType: "Organization",
+  authorName: "",
+  authorURL: "",
+  authorRRSS: [],
+  aggregateRating: true,
+  viewCount: "121",
+  ratingValue: "4.9"
+};
 
+export const App: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [imageDimensions, setImageDimensions] = useState<ImageDimensions | null>(null);
+
+  // Función para resetear el formulario
+  const handleReset = useCallback(() => {
+    setFormData(initialFormData);
+    setImageDimensions(null);
+  }, []);
 
   // Manejador general que procesa correctamente checkboxes y otros tipos de input.
   const handleInputChange = useCallback(
@@ -59,6 +67,13 @@ export const App: React.FC = () => {
   return (
     <div className="app">
       <h1>Generador de código estructurado Schema (JSON-LD)</h1>
+      <div className="p-2">
+        <button 
+          onClick={handleReset}
+          className="btn-reset">
+          Resetear
+        </button>
+      </div>
       <div className="app__container">
         <InputForm
           formData={formData}
