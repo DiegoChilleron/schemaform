@@ -8,7 +8,6 @@ interface EventFormInputsProps {
   >;
 }
 
-
 export const EventFormInputs: React.FC<EventFormInputsProps> = ({
   formData,
   onInputChange,

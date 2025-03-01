@@ -45,7 +45,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     aggregateRating,
     viewCount,
     ratingValue,
-    faqItems, // Añadido faqItems a la desestructuración
+    faqItems,
   } = formData;
 
   let schemaObject: any = {};

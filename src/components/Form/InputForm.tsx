@@ -26,7 +26,7 @@ export const InputForm: React.FC<InputFormProps> = ({
   onFAQItemsChange,
   onReset,
 }) => {
-  // Calcula las dimensiones reales de la imagen al salir del campo
+
   const handleImageBlur = useCallback(() => {
     if (!formData.urlImage) {
       onImageLoad(null);
@@ -99,8 +99,6 @@ export const InputForm: React.FC<InputFormProps> = ({
       {formData.type === "FAQ" && (
         <FAQFormInputs
           formData={formData}
-          // Eliminar esta línea:
-          // onInputChange={onInputChange}
           onFAQItemsChange={onFAQItemsChange}
         />
       )}

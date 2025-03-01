@@ -97,22 +97,17 @@ export const ArticleFormInputs: React.FC<ArticleFormInputsProps> = ({
               }}
               placeholder="Introduce la fecha de modificación"
             />
-            <button
-              type="button"
-              onClick={() =>
-                onDateModifiedChange(
-                  formData.dateModified.filter((_, i) => i !== index)
-                )
-              }
+            <button type="button" onClick={() =>
+              onDateModifiedChange(
+                formData.dateModified.filter((_, i) => i !== index)
+              )}
             >
               Eliminar
             </button>
           </div>
         ))}
         <button
-          type="button"
-          onClick={() => onDateModifiedChange([...formData.dateModified, ""])}
-        >
+          type="button" onClick={() => onDateModifiedChange([...formData.dateModified, ""])}>
           Añadir fecha de modificación
         </button>
       </div>
@@ -120,7 +115,7 @@ export const ArticleFormInputs: React.FC<ArticleFormInputsProps> = ({
       <div className="inputForm__div">
         <label htmlFor="section">Sección:</label>
         <input
-        className="w-full"
+          className="w-full"
           type="text"
           id="section"
           name="section"
@@ -134,28 +129,28 @@ export const ArticleFormInputs: React.FC<ArticleFormInputsProps> = ({
 
       <div className="inputFormdiv__author">
         <div className="inputForm__div flex flex-col md:flex-row justify-between">
-        <div>
-          <label htmlFor="authorType">Tipo de Autor:</label>
-          <select
-            id="authorType"
-            name="authorType"
-            value={formData.authorType}
-            onChange={onInputChange}
-          >
-            <option value="Organization">Organization</option>
-            <option value="Person">Person</option>
-          </select>
+          <div>
+            <label htmlFor="authorType">Tipo de Autor:</label>
+            <select
+              id="authorType"
+              name="authorType"
+              value={formData.authorType}
+              onChange={onInputChange}
+            >
+              <option value="Organization">Organization</option>
+              <option value="Person">Person</option>
+            </select>
           </div>
           <div>
-          <label htmlFor="authorName">Nombre del Autor:</label>
-          <input
-            type="text"
-            id="authorName"
-            name="authorName"
-            value={formData.authorName}
-            onChange={onInputChange}
-            placeholder="Introduce el nombre del autor"
-          />
+            <label htmlFor="authorName">Nombre del Autor:</label>
+            <input
+              type="text"
+              id="authorName"
+              name="authorName"
+              value={formData.authorName}
+              onChange={onInputChange}
+              placeholder="Introduce el nombre del autor"
+            />
           </div>
         </div>
 

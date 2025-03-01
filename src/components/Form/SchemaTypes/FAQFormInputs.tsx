@@ -3,32 +3,28 @@ import { FormData, FAQItem } from "../../../types";
 
 interface FAQFormInputsProps {
   formData: FormData;
-  // Eliminamos onInputChange ya que no se está usando
   onFAQItemsChange: (items: FAQItem[]) => void;
 }
 
 export const FAQFormInputs: React.FC<FAQFormInputsProps> = ({
   formData,
-  // Eliminamos onInputChange de la desestructuración
   onFAQItemsChange,
 }) => {
-  // Asegúrate de que faqItems existe
   const faqItems = formData.faqItems || [];
 
-  // Función para añadir una nueva pregunta vacía
   const handleAddQuestion = () => {
     const newItems = [...faqItems, { question: "", answer: "" }];
     onFAQItemsChange(newItems);
   };
 
-  // Función para actualizar una pregunta o respuesta específica
+
   const handleItemChange = (index: number, field: 'question' | 'answer', value: string) => {
     const newItems = [...faqItems];
     newItems[index] = { ...newItems[index], [field]: value };
     onFAQItemsChange(newItems);
   };
 
-  // Función para eliminar una pregunta
+
   const handleRemoveQuestion = (index: number) => {
     const newItems = faqItems.filter((_, i) => i !== index);
     onFAQItemsChange(newItems);
@@ -59,8 +55,8 @@ export const FAQFormInputs: React.FC<FAQFormInputsProps> = ({
               placeholder="Introduce la respuesta"
             ></textarea>
           </div>
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => handleRemoveQuestion(index)}
             className="btn btn-danger"
           >
@@ -70,11 +66,8 @@ export const FAQFormInputs: React.FC<FAQFormInputsProps> = ({
       ))}
 
       <div className="inputForm__div">
-        <button 
-          type="button" 
-          onClick={handleAddQuestion}
-          className="btn btn-success"
-        >
+        <button
+          type="button" onClick={handleAddQuestion} className="btn btn-success">
           Añadir pregunta
         </button>
       </div>

@@ -28,13 +28,11 @@ export const App: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [imageDimensions, setImageDimensions] = useState<ImageDimensions | null>(null);
 
-  // Función para resetear el formulario
   const handleReset = useCallback(() => {
     setFormData(initialFormData);
     setImageDimensions(null);
   }, []);
 
-  // Manejador general que procesa correctamente checkboxes y otros tipos de input.
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const target = e.target;
@@ -65,7 +63,6 @@ export const App: React.FC = () => {
     setFormData((prev) => ({ ...prev, faqItems: newItems }));
   }, []);
 
-  // Selecciona el componente de SchemaOutput según la URL.
   const SchemaOutputComponent = getSchemaOutputComponent(formData.url);
 
   return (
