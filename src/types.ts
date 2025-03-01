@@ -24,12 +24,16 @@ export interface FormData {
     eventImage?: string;
     performer?: string;
     eventStatus?: string;
-    question?: string;
-    answer?: string;
+    faqItems: FAQItem[];
   }
   
   export interface ImageDimensions {
     width: number;
     height: number;
+  }
+
+  export interface FAQItem {
+    question: string;
+    answer: string;
   }
   

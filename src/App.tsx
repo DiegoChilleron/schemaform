@@ -2,9 +2,8 @@ import { useState, ChangeEvent, useCallback } from "react";
 
 import { InputForm } from "./components/Form/InputForm";
 import { getSchemaOutputComponent } from "./helpers/getSchemaOutputComponent";
-import { FormData, ImageDimensions } from "./types.ts";
+import { FormData, ImageDimensions, FAQItem } from "./types.ts";
 
-// Definir los valores iniciales del formulario
 const initialFormData: FormData = {
   url: "",
   type: "",
@@ -21,7 +20,8 @@ const initialFormData: FormData = {
   authorRRSS: [],
   aggregateRating: true,
   viewCount: "121",
-  ratingValue: "4.9"
+  ratingValue: "4.9",
+  faqItems: []
 };
 
 export const App: React.FC = () => {
@@ -61,19 +61,16 @@ export const App: React.FC = () => {
     setFormData((prev) => ({ ...prev, authorRRSS: newRRSS }));
   }, []);
 
+  const handleFAQItemsChange = useCallback((newItems: FAQItem[]) => {
+    setFormData((prev) => ({ ...prev, faqItems: newItems }));
+  }, []);
+
   // Selecciona el componente de SchemaOutput según la URL.
   const SchemaOutputComponent = getSchemaOutputComponent(formData.url);
 
   return (
     <div className="app">
       <h1>Generador de código estructurado Schema (JSON-LD)</h1>
-      <div className="p-2">
-        <button 
-          onClick={handleReset}
-          className="btn-reset">
-          Resetear
-        </button>
-      </div>
       <div className="app__container">
         <InputForm
           formData={formData}
@@ -81,6 +78,8 @@ export const App: React.FC = () => {
           onImageLoad={setImageDimensions}
           onDateModifiedChange={handleDateModifiedChange}
           onAuthorRRSSChange={handleAuthorRRSSChange}
+          onFAQItemsChange={handleFAQItemsChange}
+          onReset={handleReset}
         />
         <SchemaOutputComponent formData={formData} imageDimensions={imageDimensions} />
       </div>

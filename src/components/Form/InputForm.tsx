@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useCallback } from "react";
-import { FormData } from "../../types";
+import { FormData, FAQItem } from "../../types";
 import { ArticleFormInputs } from "./SchemaTypes/ArticleFormInputs";
 import { PageFormInputs } from "./SchemaTypes/PageFormInputs";
 import { EventFormInputs } from "./SchemaTypes/EventFormInputs";
@@ -13,6 +13,8 @@ interface InputFormProps {
   onImageLoad: (dimensions: { width: number; height: number } | null) => void;
   onDateModifiedChange: (newDates: string[]) => void;
   onAuthorRRSSChange: (newRRSS: string[]) => void;
+  onFAQItemsChange: (items: FAQItem[]) => void;
+  onReset: () => void;
 }
 
 export const InputForm: React.FC<InputFormProps> = ({
@@ -21,6 +23,8 @@ export const InputForm: React.FC<InputFormProps> = ({
   onImageLoad,
   onDateModifiedChange,
   onAuthorRRSSChange,
+  onFAQItemsChange,
+  onReset,
 }) => {
   // Calcula las dimensiones reales de la imagen al salir del campo
   const handleImageBlur = useCallback(() => {
@@ -51,6 +55,7 @@ export const InputForm: React.FC<InputFormProps> = ({
 
   return (
     <form>
+      <div className="flex justify-between" >
       <div className="inputForm__div">
         <label htmlFor="type">Tipo:</label>
         <select id="type" name="type" value={formData.type} onChange={onInputChange}>
@@ -64,6 +69,15 @@ export const InputForm: React.FC<InputFormProps> = ({
         </select>
       </div>
 
+      <div className="py-3">
+        <button
+          type="button"
+          onClick={onReset}
+          >
+          Resetear
+        </button>
+      </div>
+      </div>
       {(formData.type === "Article" || formData.type === "NewsArticle" || formData.type === "BlogPosting") && (
         <ArticleFormInputs
           formData={formData}
@@ -83,7 +97,12 @@ export const InputForm: React.FC<InputFormProps> = ({
       )}
 
       {formData.type === "FAQ" && (
-        <FAQFormInputs formData={formData} onInputChange={onInputChange} />
+        <FAQFormInputs
+          formData={formData}
+          // Eliminar esta línea:
+          // onInputChange={onInputChange}
+          onFAQItemsChange={onFAQItemsChange}
+        />
       )}
     </form>
   );

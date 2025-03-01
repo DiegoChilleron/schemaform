@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 h1 {
-    @apply text-white font-sans text-xl md:text-3xl font-stretch-expanded font-semibold text-center py-12;
+    @apply text-[#3C4044] font-sans text-xl md:text-2xl font-stretch-expanded font-semibold text-center py-12;
 }
 
 h2 {
@@ -9,7 +9,7 @@ h2 {
 }
 
 html {
-    @apply p-4 bg-[#01AAC9];
+    @apply p-4 bg-[#F5F3EF];
 }
 
 .app__container {
@@ -17,11 +17,11 @@ html {
 }
 
 .SchemaOutput {
-    @apply rounded-xl py-6 px-4 md:px-10 bg-white text-xs text-left overflow-hidden text-clip min-h-svh overflow-x-auto whitespace-nowrap;
+    @apply rounded-2xl py-6 px-4 md:px-10 bg-white text-xs text-left overflow-hidden text-clip min-h-svh overflow-x-auto whitespace-nowrap shadow-xl ring-gray-900/5;
 }
 
 form {
-    @apply rounded-xl p-6 bg-white text-xs sm:text-sm min-h-svh;
+    @apply rounded-2xl p-6 bg-white text-xs sm:text-sm min-h-svh shadow-xl ring-gray-900/5;
 }
 
 .inputForm__div {
@@ -30,7 +30,7 @@ form {
 
 
 .inputFormdiv__author {
-    @apply border border-gray-200 p-3 my-5 rounded-sm;
+    @apply border border-gray-200 p-3 my-5 rounded-lg;
 }
 
 input, textarea {
@@ -45,6 +45,3 @@ button {
     @apply border border-gray-400 rounded-lg py-1 px-2 mx-3 hover:bg-gray-200 active:bg-[#01AAC9] active:text-white active:border-white;
 }
 
-.btn-reset {
-    @apply bg-white font-light text-base border-gray-400 rounded-lg py-1 px-2 mx-3 hover:bg-gray-200 active:bg-[#01AAC9] active:text-white active:border-white;
-}

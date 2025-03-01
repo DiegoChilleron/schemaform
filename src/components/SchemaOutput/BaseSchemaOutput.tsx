@@ -45,6 +45,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     aggregateRating,
     viewCount,
     ratingValue,
+    faqItems, // Añadido faqItems a la desestructuración
   } = formData;
 
   let schemaObject: any = {};
@@ -283,20 +284,34 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     };
 
   } else if (type === "FAQ") {
-    // Estructura para FAQ
+    // Estructura para FAQ con múltiples preguntas
+    const items = faqItems || [];
+    
+    // Crear un array de entidades de preguntas y respuestas
+    const mainEntityArray = items.length > 0 
+      ? items.map(item => ({
+          "@type": "Question",
+          "name": item.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": item.answer
+          }
+        }))
+      : [
+          {
+            "@type": "Question",
+            "name": "No hay preguntas añadidas",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Añade preguntas usando el formulario"
+            }
+          }
+        ];
+
     schemaObject = {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: formData.question ||"",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: formData.answer ||"",
-          },
-        },
-      ],
+      "mainEntity": mainEntityArray
     };
   } else {
     // Estructura por defecto
