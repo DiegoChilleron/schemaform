@@ -1,9 +1,10 @@
 import React, { ChangeEvent, useEffect, useCallback } from "react";
-import { FormData, FAQItem } from "../../types";
+import { FormData, FAQItem, HowToStep } from "../../types";
 import { ArticleFormInputs } from "./SchemaTypes/ArticleFormInputs";
 import { PageFormInputs } from "./SchemaTypes/PageFormInputs";
 import { EventFormInputs } from "./SchemaTypes/EventFormInputs";
 import { FAQFormInputs } from "./SchemaTypes/FAQFormInputs";
+import { HowToFormInputs } from "./SchemaTypes/HowToFormInputs";
 
 interface InputFormProps {
   formData: FormData;
@@ -14,6 +15,7 @@ interface InputFormProps {
   onDateModifiedChange: (newDates: string[]) => void;
   onAuthorRRSSChange: (newRRSS: string[]) => void;
   onFAQItemsChange: (items: FAQItem[]) => void;
+  onHowToStepsChange: (steps: HowToStep[]) => void;
   onReset: () => void;
 }
 
@@ -24,6 +26,7 @@ export const InputForm: React.FC<InputFormProps> = ({
   onDateModifiedChange,
   onAuthorRRSSChange,
   onFAQItemsChange,
+  onHowToStepsChange,
   onReset,
 }) => {
 
@@ -66,6 +69,7 @@ export const InputForm: React.FC<InputFormProps> = ({
           <option value="Pagina">Pagina</option>
           <option value="Event">Evento</option>
           <option value="FAQ">FAQ</option>
+          <option value="HowTo">Cómo Hacer (HowTo)</option>
         </select>
       </div>
 
@@ -100,6 +104,14 @@ export const InputForm: React.FC<InputFormProps> = ({
         <FAQFormInputs
           formData={formData}
           onFAQItemsChange={onFAQItemsChange}
+        />
+      )}
+
+      {formData.type === "HowTo" && (
+        <HowToFormInputs
+          formData={formData}
+          onInputChange={onInputChange}
+          onHowToStepsChange={onHowToStepsChange}
         />
       )}
     </form>

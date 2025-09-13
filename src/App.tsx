@@ -2,7 +2,7 @@ import { useState, ChangeEvent, useCallback } from "react";
 
 import { InputForm } from "./components/Form/InputForm";
 import { getSchemaOutputComponent } from "./helpers/getSchemaOutputComponent";
-import { FormData, ImageDimensions, FAQItem } from "./types.ts";
+import { FormData, ImageDimensions, FAQItem, HowToStep } from "./types.ts";
 
 const initialFormData: FormData = {
   url: "",
@@ -21,7 +21,11 @@ const initialFormData: FormData = {
   aggregateRating: true,
   viewCount: "121",
   ratingValue: "4.9",
-  faqItems: []
+  faqItems: [],
+  totalTime: "",
+  estimatedCost: "",
+  supply: "",
+  howToSteps: []
 };
 
 export const App: React.FC = () => {
@@ -63,6 +67,10 @@ export const App: React.FC = () => {
     setFormData((prev) => ({ ...prev, faqItems: newItems }));
   }, []);
 
+  const handleHowToStepsChange = useCallback((newSteps: HowToStep[]) => {
+    setFormData((prev) => ({ ...prev, howToSteps: newSteps }));
+  }, []);
+
   const SchemaOutputComponent = getSchemaOutputComponent(formData.url);
 
   return (
@@ -76,6 +84,7 @@ export const App: React.FC = () => {
           onDateModifiedChange={handleDateModifiedChange}
           onAuthorRRSSChange={handleAuthorRRSSChange}
           onFAQItemsChange={handleFAQItemsChange}
+          onHowToStepsChange={handleHowToStepsChange}
           onReset={handleReset}
         />
         <SchemaOutputComponent formData={formData} imageDimensions={imageDimensions} />

@@ -5,7 +5,7 @@ import { FormData, ImageDimensions } from "../../types";
 const labelsIT: SchemaLabels = {
   domainPlaceholder: "https://neuronup.com/it/",
   imageLogoPlaceholder: "https://neuronup.com/it/wp-content/uploads/2023/12/logo-neuronup-core.svg",
-  telephonePlaceholder: ["+34-649-46-40-94", "+39-351-408-51-10"],
+  telephonePlaceholder: ["+39-351-477-94-88"],
   contactTypePlaceholder: ["Customer Service", "Sales"],
   availableLanguage: ["it", "pt", "es", "en", "fr"],
   emailPlaceholder: "neuronup.it@neuronup.com",

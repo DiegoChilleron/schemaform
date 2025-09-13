@@ -25,6 +25,11 @@ export interface FormData {
     performer?: string;
     eventStatus?: string;
     faqItems: FAQItem[];
+    // HowTo schema fields
+    totalTime?: string;
+    estimatedCost?: string;
+    supply?: string;
+    howToSteps: HowToStep[];
   }
   
   export interface ImageDimensions {
@@ -35,5 +40,12 @@ export interface FormData {
   export interface FAQItem {
     question: string;
     answer: string;
+  }
+
+  export interface HowToStep {
+    name: string;
+    text: string;
+    url: string;
+    image: string;
   }
   

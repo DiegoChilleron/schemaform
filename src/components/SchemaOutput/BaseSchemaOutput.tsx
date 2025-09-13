@@ -46,6 +46,10 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     viewCount,
     ratingValue,
     faqItems,
+    totalTime,
+    estimatedCost,
+    supply,
+    howToSteps,
   } = formData;
 
   let schemaObject: any = {};
@@ -232,7 +236,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     const schemaWebApplication = {
       "@type": "WebApplication",
       name: "NeuronUP",
-      applicationCategory: "Software as a Service",
+      applicationCategory: "HealthApplication",
       operatingSystem: "All",
       url: "https://app.neuronup.com/",
       description: labels.haspartDescriptionPlaceholder,
@@ -312,6 +316,60 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": mainEntityArray
+    };
+  } else if (type === "HowTo") {
+    // Estructura para HowTo con múltiples pasos
+    const steps = howToSteps || [];
+    
+    // Crear un array de pasos
+    const stepArray = steps.length > 0 
+      ? steps.map((step, index) => ({
+          "@type": "HowToStep",
+          "position": index + 1,
+          "name": step.name || `Paso ${index + 1}`,
+          "text": step.text || "",
+          ...(step.url && { "url": step.url }),
+          ...(step.image && { 
+            "image": {
+              "@type": "ImageObject",
+              "url": step.image
+            }
+          })
+        }))
+      : [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "No hay pasos añadidos",
+            "text": "Añade pasos usando el formulario"
+          }
+        ];
+
+    // Crear lista de materiales/herramientas si se proporciona
+    const supplyList = supply ? supply.split(',').map(item => item.trim()).filter(item => item) : [];
+
+    schemaObject = {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": title || "",
+      "description": description || "",
+      ...(urlImage && {
+        "image": {
+          "@type": "ImageObject",
+          "url": urlImage,
+          "width": imageDimensions ? imageDimensions.width : 1200,
+          "height": imageDimensions ? imageDimensions.height : 675,
+        }
+      }),
+      ...(totalTime && { "totalTime": totalTime }),
+      ...(estimatedCost && { "estimatedCost": { "@type": "MonetaryAmount", "value": estimatedCost } }),
+      ...(supplyList.length > 0 && { 
+        "supply": supplyList.map(item => ({
+          "@type": "HowToSupply",
+          "name": item
+        }))
+      }),
+      "step": stepArray
     };
   } else {
     // Estructura por defecto
