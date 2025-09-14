@@ -1,15 +1,25 @@
 @import "tailwindcss";
 
+:root {
+    --colorprimary: #F5F3EF;
+    --button-hover-text: white;
+    --h1-color: #3C4044;
+}
+
+body {
+    @apply p-4;
+    background-color: var(--colorprimary);
+    transition: background-color 0.8s ease-in-out;
+}
+
 h1 {
-    @apply text-[#3C4044] font-sans text-xl md:text-2xl font-stretch-expanded font-semibold text-center py-12;
+    @apply font-sans text-xl md:text-2xl font-stretch-expanded font-semibold text-center py-12;
+    color: var(--h1-color);
+    transition: color 0.8s ease-in-out;
 }
 
 h2 {
     @apply text-center text-base font-semibold;
-}
-
-html {
-    @apply p-4 bg-[#F5F3EF];
 }
 
 .app__container {
@@ -29,8 +39,8 @@ form {
 }
 
 
-.inputFormdiv__author {
-    @apply border border-gray-200 p-3 my-5 rounded-lg;
+.inputFormdiv__subdiv {
+    @apply border border-gray-200 p-3 my-5 rounded-xl;
 }
 
 input, textarea {
@@ -42,6 +52,12 @@ select {
 }
 
 button {
-    @apply border border-gray-400 rounded-lg py-1 px-2 mx-3 hover:bg-gray-200 active:bg-[#01AAC9] active:text-white active:border-white;
+    @apply border border-gray-400 rounded-lg py-1 px-2 mx-3;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: var(--colorprimary);
+    color: var(--button-hover-text);
 }
 

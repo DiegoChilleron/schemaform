@@ -1,8 +1,9 @@
 import { useState, ChangeEvent, useCallback } from "react";
 
 import { InputForm } from "./components/Form/InputForm";
+import { ThemeManager } from "./components/ThemeManager";
 import { getSchemaOutputComponent } from "./helpers/getSchemaOutputComponent";
-import { FormData, ImageDimensions, FAQItem, HowToStep } from "./types.ts";
+import { FormData, ImageDimensions, FAQItem, HowToStep, YouTubeVideo } from "./types.ts";
 
 const initialFormData: FormData = {
   url: "",
@@ -21,6 +22,8 @@ const initialFormData: FormData = {
   aggregateRating: true,
   viewCount: "121",
   ratingValue: "4.9",
+  containsYouTubeVideo: false,
+  youtubeVideos: [],
   faqItems: [],
   totalTime: "",
   estimatedCost: "",
@@ -35,6 +38,10 @@ export const App: React.FC = () => {
   const handleReset = useCallback(() => {
     setFormData(initialFormData);
     setImageDimensions(null);
+    // Usar la función global de reset del tema
+    if ((window as any).resetTheme) {
+      (window as any).resetTheme();
+    }
   }, []);
 
   const handleInputChange = useCallback(
@@ -71,10 +78,15 @@ export const App: React.FC = () => {
     setFormData((prev) => ({ ...prev, howToSteps: newSteps }));
   }, []);
 
+  const handleYouTubeVideosChange = useCallback((newVideos: YouTubeVideo[]) => {
+    setFormData((prev) => ({ ...prev, youtubeVideos: newVideos }));
+  }, []);
+
   const SchemaOutputComponent = getSchemaOutputComponent(formData.url);
 
   return (
     <div className="app">
+      <ThemeManager url={formData.url} />
       <h1>Generador de código estructurado Schema (JSON-LD)</h1>
       <div className="app__container">
         <InputForm
@@ -83,6 +95,7 @@ export const App: React.FC = () => {
           onImageLoad={setImageDimensions}
           onDateModifiedChange={handleDateModifiedChange}
           onAuthorRRSSChange={handleAuthorRRSSChange}
+          onYouTubeVideosChange={handleYouTubeVideosChange}
           onFAQItemsChange={handleFAQItemsChange}
           onHowToStepsChange={handleHowToStepsChange}
           onReset={handleReset}

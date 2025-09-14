@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useCallback } from "react";
-import { FormData, FAQItem, HowToStep } from "../../types";
+import { FormData, FAQItem, HowToStep, YouTubeVideo } from "../../types";
 import { ArticleFormInputs } from "./SchemaTypes/ArticleFormInputs";
 import { PageFormInputs } from "./SchemaTypes/PageFormInputs";
 import { EventFormInputs } from "./SchemaTypes/EventFormInputs";
@@ -14,6 +14,7 @@ interface InputFormProps {
   onImageLoad: (dimensions: { width: number; height: number } | null) => void;
   onDateModifiedChange: (newDates: string[]) => void;
   onAuthorRRSSChange: (newRRSS: string[]) => void;
+  onYouTubeVideosChange: (newVideos: YouTubeVideo[]) => void;
   onFAQItemsChange: (items: FAQItem[]) => void;
   onHowToStepsChange: (steps: HowToStep[]) => void;
   onReset: () => void;
@@ -25,6 +26,7 @@ export const InputForm: React.FC<InputFormProps> = ({
   onImageLoad,
   onDateModifiedChange,
   onAuthorRRSSChange,
+  onYouTubeVideosChange,
   onFAQItemsChange,
   onHowToStepsChange,
   onReset,
@@ -89,6 +91,7 @@ export const InputForm: React.FC<InputFormProps> = ({
           handleImageBlur={handleImageBlur}
           onDateModifiedChange={onDateModifiedChange}
           onAuthorRRSSChange={onAuthorRRSSChange}
+          onYouTubeVideosChange={onYouTubeVideosChange}
         />
       )}
 

@@ -28,6 +28,22 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
   labels,
   header,
 }) => {
+  // Helper function to extract YouTube video ID from URL
+  const extractYouTubeVideoId = (url: string): string | null => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/watch\?.*v=([^&\n?#]+)/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) {
+        return match[1];
+      }
+    }
+    return null;
+  };
+
   const {
     url,
     type,
@@ -45,6 +61,8 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     aggregateRating,
     viewCount,
     ratingValue,
+    containsYouTubeVideo,
+    youtubeVideos,
     faqItems,
     totalTime,
     estimatedCost,
@@ -190,6 +208,22 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
           url: labels.imageLogoPlaceholder,
         },
       },
+      ...(containsYouTubeVideo && youtubeVideos.length > 0 && {
+        video: youtubeVideos
+          .filter(video => video.url.trim() !== '')
+          .map(video => {
+            const videoId = extractYouTubeVideoId(video.url);
+            return {
+              "@type": "VideoObject",
+              name: video.name || video.url,
+              description: video.description || "",
+              thumbnailUrl: videoId ? `https://i.ytimg.com/vi_webp/${videoId}/hqdefault.webp` : (urlImage || ""),
+              contentUrl: video.url,
+              embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : video.url,
+              uploadDate: publishedDate,
+            };
+          }),
+      }),
     };
 
     const schemaWebPage = {

@@ -16,6 +16,8 @@ export interface FormData {
     aggregateRating: boolean;
     viewCount: string;
     ratingValue: string;
+    containsYouTubeVideo: boolean;
+    youtubeVideos: YouTubeVideo[];
     eventURL?: string;
     eventName?: string;
     eventDescription?: string;
@@ -35,6 +37,12 @@ export interface FormData {
   export interface ImageDimensions {
     width: number;
     height: number;
+  }
+
+  export interface YouTubeVideo {
+    url: string;
+    name: string;
+    description: string;
   }
 
   export interface FAQItem {
