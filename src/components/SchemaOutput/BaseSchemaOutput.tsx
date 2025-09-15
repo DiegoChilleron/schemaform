@@ -1,4 +1,6 @@
 import { FormData, ImageDimensions } from "../../types";
+import { getSchemaLabelsFromURL } from "../../config/companies";
+import { SchemaFactory } from "../../schemas/SchemaFactory";
 
 export interface SchemaLabels {
   domainPlaceholder: string;
@@ -11,6 +13,17 @@ export interface SchemaLabels {
   aboutNamePlaceholder: string;
   aboutDescriptionPlaceholder: string;
   haspartDescriptionPlaceholder: string;
+  organizationName: string;
+  organizationURL: string;
+  organizationAppURL: string;
+  organizationSameAs: string[];
+  organizationAddress: {
+    streetAddress: string;
+    addressLocality: string;
+    addressRegion: string;
+    postalCode: string;
+    addressCountry: string;
+  };
 }
 
 export interface BaseSchemaOutputProps {
@@ -19,6 +32,7 @@ export interface BaseSchemaOutputProps {
   language: string;
   labels: SchemaLabels;
   header: string;
+  originalUrl?: string;
 }
 
 export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
@@ -27,388 +41,14 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
   language,
   labels,
   header,
+  originalUrl,
 }) => {
-  // Helper function to extract YouTube video ID from URL
-  const extractYouTubeVideoId = (url: string): string | null => {
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-      /youtube\.com\/watch\?.*v=([^&\n?#]+)/
-    ];
-    
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match) {
-        return match[1];
-      }
-    }
-    return null;
-  };
+  // Obtener configuración dinámica de la empresa basada en la URL
+  const dynamicLabels = originalUrl ? getSchemaLabelsFromURL(originalUrl) : labels;
 
-  const {
-    url,
-    type,
-    title,
-    description,
-    domain,
-    datePublished,
-    dateModified,
-    section,
-    urlImage,
-    authorType,
-    authorName,
-    authorURL,
-    authorRRSS,
-    aggregateRating,
-    viewCount,
-    ratingValue,
-    containsYouTubeVideo,
-    youtubeVideos,
-    faqItems,
-    totalTime,
-    estimatedCost,
-    supply,
-    howToSteps,
-  } = formData;
-
-  let schemaObject: any = {};
-
-  if (type === "Pagina") {
-    // Estructura específica para "Pagina"
-    schemaObject = {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      name: title || "",
-      url: url || "",
-      description: description || "",
-      inLanguage: language,
-      mainEntityOfPage: {
-        "@type": "WebSite",
-        name: "NeuronUP",
-        url: domain || labels.domainPlaceholder,
-      },
-      primaryImageOfPage: {
-        "@type": "ImageObject",
-        url: labels.imageLogoPlaceholder,
-      },
-      about: {
-        "@type": "MedicalTherapy",
-        name: labels.aboutNamePlaceholder,
-        description: labels.aboutDescriptionPlaceholder,
-      },
-      mainEntity: {
-        "@type": "MedicalOrganization",
-        name: "NeuronUP",
-        url: domain || labels.domainPlaceholder,
-        logo: labels.imageLogoPlaceholder,
-        sameAs: [
-          "https://www.facebook.com/NeuronUP",
-          "https://x.com/NeuronUP",
-          "https://www.linkedin.com/company/neuronup",
-          "https://www.youtube.com/user/NeuronUp",
-          "https://www.instagram.com/NeuronUP",
-        ],
-        contactPoint: {
-          "@type": "ContactPoint",
-          telephone: labels.telephonePlaceholder,
-          contactType: labels.contactTypePlaceholder,
-          areaServed: "Worldwide",
-          availableLanguage: labels.availableLanguage,
-          email: labels.emailPlaceholder,
-        },
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: "C. Piqueras, 31",
-          addressLocality: "Logroño",
-          addressRegion: "La Rioja",
-          postalCode: "26006",
-          addressCountry: "ES",
-        },
-      },
-      hasPart: {
-        "@type": "WebApplication",
-        name: "NeuronUP",
-        applicationCategory: "Software as a Service",
-        operatingSystem: "All",
-        url: "https://app.neuronup.com/",
-        description: labels.haspartDescriptionPlaceholder,
-        ...(aggregateRating &&
-          viewCount &&
-          ratingValue && {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            reviewCount: viewCount,
-            ratingValue: ratingValue,
-            bestRating: "5",
-            worstRating: "1"
-          },
-        }),
-      },
-    };
-  } else if (
-    type === "Article" ||
-    type === "NewsArticle" ||
-    type === "BlogPosting"
-  ) {
-    // Estructura para Article, NewsArticle y BlogPosting
-    const articleType = type || "Article";
-    const publishedDate = datePublished ? `${datePublished}:00+01:00` : "";
-
-    const filteredModifiedDates = dateModified
-      .filter((d) => d)
-      .map((d) => `${d}:00+01:00`);
-    const modifiedDates =
-      filteredModifiedDates.length > 0
-        ? filteredModifiedDates.length === 1
-          ? filteredModifiedDates[0]
-          : filteredModifiedDates
-        : undefined;
-
-    const imageObject = {
-      "@type": "ImageObject",
-      url: urlImage || "",
-      width: imageDimensions ? imageDimensions.width : 1200,
-      height: imageDimensions ? imageDimensions.height : 675,
-    };
-
-    const filteredRRSS = authorRRSS.filter((a) => a);
-    const sameAs =
-      filteredRRSS.length > 0
-        ? filteredRRSS.length === 1
-          ? filteredRRSS[0]
-          : filteredRRSS
-        : undefined;
-
-    const author = {
-      "@type": authorType || "Organization",
-      name: authorName || "NeuronUP",
-      url: authorURL || labels.authorURLPlaceholder,
-      ...(sameAs && { sameAs }),
-    };
-
-    const schemaArticle = {
-      "@type": articleType,
-      mainEntityOfPage: {
-        "@type": "WebPage",
-        "@id": url || "",
-      },
-      headline: title || "",
-      description: description || "",
-      datePublished: publishedDate,
-      ...(modifiedDates &&
-        modifiedDates.length > 0 && { dateModified: modifiedDates }),
-      articleSection: section || "",
-      inLanguage: language,
-      image: imageObject,
-      author: author,
-      publisher: {
-        "@type": "Organization",
-        name: "NeuronUP",
-        logo: {
-          "@type": "ImageObject",
-          url: labels.imageLogoPlaceholder,
-        },
-      },
-      ...(containsYouTubeVideo && youtubeVideos.length > 0 && {
-        video: youtubeVideos
-          .filter(video => video.url.trim() !== '')
-          .map(video => {
-            const videoId = extractYouTubeVideoId(video.url);
-            return {
-              "@type": "VideoObject",
-              name: video.name || video.url,
-              description: video.description || "",
-              thumbnailUrl: videoId ? `https://i.ytimg.com/vi_webp/${videoId}/hqdefault.webp` : (urlImage || ""),
-              contentUrl: video.url,
-              embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : video.url,
-              uploadDate: publishedDate,
-            };
-          }),
-      }),
-    };
-
-    const schemaWebPage = {
-      "@type": "WebPage",
-      url: url || "",
-      mainEntityOfPage: {
-        "@type": "WebSite",
-        name: "NeuronUP",
-        url: "https://neuronup.com",
-      },
-      mainEntity: {
-        "@type": "MedicalOrganization",
-        name: "NeuronUP",
-        url: "https://neuronup.com",
-        logo: labels.imageLogoPlaceholder,
-        sameAs: [
-          "https://www.facebook.com/NeuronUP",
-          "https://x.com/NeuronUP",
-          "https://www.linkedin.com/company/neuronup",
-          "https://www.youtube.com/user/NeuronUp",
-          "https://www.instagram.com/NeuronUP",
-        ],
-        contactPoint: [
-          {
-            "@type": "ContactPoint",
-            telephone: labels.telephonePlaceholder,
-            contactType: ["Customer Service", "Sales"],
-            areaServed: "Worldwide",
-            availableLanguage: labels.availableLanguage,
-            email: labels.emailPlaceholder,
-          },
-        ],
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: "C. Piqueras, 31",
-          addressLocality: "Logroño",
-          addressRegion: "La Rioja",
-          postalCode: "26006",
-          addressCountry: "ES",
-        },
-      },
-    };
-
-    const schemaWebApplication = {
-      "@type": "WebApplication",
-      name: "NeuronUP",
-      applicationCategory: "HealthApplication",
-      operatingSystem: "All",
-      url: "https://app.neuronup.com/",
-      description: labels.haspartDescriptionPlaceholder,
-      ...(aggregateRating &&
-        viewCount &&
-        ratingValue && {
-        aggregateRating: {
-          "@type": "AggregateRating",
-          reviewCount: viewCount,
-          ratingValue: ratingValue,
-          bestRating: "5",
-          worstRating: "1"
-        },
-      }),
-    };
-
-    // Crea el objeto final con @graph
-    schemaObject = {
-      "@context": "https://schema.org",
-      "@graph": [schemaArticle, schemaWebPage, schemaWebApplication],
-    };
-
-  } else if (type === "Event") {
-    // Estructura para Event
-    const startDate = formData.startDate ? `${formData.startDate}:00+01:00` : "";
-    const endDate = formData.endDate ? `${formData.endDate}:00+01:00` : "";
-
-    const schemaEvent = {
-      "@type": "Event",
-      name: formData.eventName || "",
-      description: formData.eventDescription || "",
-      startDate,
-      endDate,
-      location: {
-        "@type": "VirtualLocation",
-        url: formData.eventURL || "",
-      },
-      image: formData.eventImage || "",
-      performer: {
-        "@type": "Person",
-        "name": formData.performer || "",
-      },
-      eventStatus: formData.eventStatus || "",
-    };
-
-    schemaObject = {
-      "@context": "https://schema.org",
-      "@graph": [schemaEvent],
-    };
-
-  } else if (type === "FAQ") {
-    // Estructura para FAQ con múltiples preguntas
-    const items = faqItems || [];
-    
-    // Crear un array de entidades de preguntas y respuestas
-    const mainEntityArray = items.length > 0 
-      ? items.map(item => ({
-          "@type": "Question",
-          "name": item.question,
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": item.answer
-          }
-        }))
-      : [
-          {
-            "@type": "Question",
-            "name": "No hay preguntas añadidas",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Añade preguntas usando el formulario"
-            }
-          }
-        ];
-
-    schemaObject = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": mainEntityArray
-    };
-  } else if (type === "HowTo") {
-    // Estructura para HowTo con múltiples pasos
-    const steps = howToSteps || [];
-    
-    // Crear un array de pasos
-    const stepArray = steps.length > 0 
-      ? steps.map((step, index) => ({
-          "@type": "HowToStep",
-          "position": index + 1,
-          "name": step.name || `Paso ${index + 1}`,
-          "text": step.text || "",
-          ...(step.url && { "url": step.url }),
-          ...(step.image && { 
-            "image": {
-              "@type": "ImageObject",
-              "url": step.image
-            }
-          })
-        }))
-      : [
-          {
-            "@type": "HowToStep",
-            "position": 1,
-            "name": "No hay pasos añadidos",
-            "text": "Añade pasos usando el formulario"
-          }
-        ];
-
-    // Crear lista de materiales/herramientas si se proporciona
-    const supplyList = supply ? supply.split(',').map(item => item.trim()).filter(item => item) : [];
-
-    schemaObject = {
-      "@context": "https://schema.org",
-      "@type": "HowTo",
-      "name": title || "",
-      "description": description || "",
-      ...(urlImage && {
-        "image": {
-          "@type": "ImageObject",
-          "url": urlImage,
-          "width": imageDimensions ? imageDimensions.width : 1200,
-          "height": imageDimensions ? imageDimensions.height : 675,
-        }
-      }),
-      ...(totalTime && { "totalTime": totalTime }),
-      ...(estimatedCost && { "estimatedCost": { "@type": "MonetaryAmount", "value": estimatedCost } }),
-      ...(supplyList.length > 0 && { 
-        "supply": supplyList.map(item => ({
-          "@type": "HowToSupply",
-          "name": item
-        }))
-      }),
-      "step": stepArray
-    };
-  } else {
-    // Estructura por defecto
-    schemaObject = "Selecciona un tipo";
-  }
+  // Usar SchemaFactory para generar el schema
+  const schemaFactory = new SchemaFactory(formData, imageDimensions, language, dynamicLabels);
+  const schemaObject = schemaFactory.generateSchema();
 
   let schemaStringRaw = "";
 
@@ -423,7 +63,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
     schemaStringRaw = schemaObject; // "Selecciona un tipo"
   }
 
-  // Arrays en una línea
+  // Arrays en una línea para mejor legibilidad
   const schemaString = schemaStringRaw
     .replace(
       /("telephone": )\[\s+([^\]]+?)\s+\]/g,
@@ -440,14 +80,20 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
 
   return (
     <div className="SchemaOutput">
-      <div className="grid grid-cols-3 py-4">
-        <h2 className="col-span-2">{header}</h2>
-        <button
-          onClick={() => navigator.clipboard.writeText(schemaString)}
-          className="justify-self-end"
-        >
-          Copiar todo
-        </button>
+      <div className="flex justify-between items-center py-4">
+        <h2 className="flex-1">{header}</h2>
+        <div className="flex gap-2">
+          <button
+            onClick={() => navigator.clipboard.writeText(schemaString)}
+          >
+            Copiar todo
+          </button>
+          <button
+            onClick={() => window.open('https://search.google.com/test/rich-results?hl=es', '_blank')}
+          >
+            Validar
+          </button>
+        </div>
       </div>
       <pre>{schemaString}</pre>
     </div>

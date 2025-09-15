@@ -1,25 +1,46 @@
 
-import { SchemaOutputBasic } from "../components/SchemaOutput/SchemaOutputBasic";
-import { SchemaNeuronUPEN } from "../components/SchemaOutput/SchemaNeuronUPEN";
-import { SchemaNeuronUPES } from "../components/SchemaOutput/SchemaNeuronUPES";
-import { SchemaNeuronUPBR } from "../components/SchemaOutput/SchemaNeuronUPBR";
-import { SchemaNeuronUPFR } from "../components/SchemaOutput/SchemaNeuronUPFR";
-import { SchemaNeuronUPIT } from "../components/SchemaOutput/SchemaNeuronUPIT";
-import { SchemaNeuronUPDE } from "../components/SchemaOutput/SchemaNeuronUPDE";
-import { SchemaNeuronUPRU } from "../components/SchemaOutput/SchemaNeuronUPRU";
-import { SchemaNeuronUPAR } from "../components/SchemaOutput/SchemaNeuronUPAR";
+import React from 'react';
+import { UnifiedSchemaOutput } from "../components/SchemaOutput/UnifiedSchemaOutput";
 import { FormData, ImageDimensions } from "../types";
 
+// Helper optimizado para determinar el idioma basándose en la URL
+const getLanguageFromURL = (url: string): string => {
+  const urlLower = url.toLowerCase();
+  
+  // Mapeo optimizado de dominios/rutas a idiomas
+  const languageMap: Record<string, string> = {
+    'neuronup.us': 'en',
+    '/br/': 'pt',
+    '/fr/': 'fr', 
+    '/it/': 'it',
+    '/de/': 'de',
+    '/ru/': 'ru',
+    '/ar/': 'ar',
+    'neuronup.com': 'es'
+  };
+  
+  // Buscar coincidencia en el mapa
+  for (const [pattern, language] of Object.entries(languageMap)) {
+    if (urlLower.includes(pattern)) {
+      return language;
+    }
+  }
+  
+  // Idioma por defecto para URLs no reconocidas
+  return "en";
+};
+
+// Helper simplificado que siempre retorna UnifiedSchemaOutput
 export const getSchemaOutputComponent = (
   url: string
 ): React.FC<{ formData: FormData; imageDimensions: ImageDimensions | null }> => {
-  if (url.startsWith("https://neuronup.us")) return SchemaNeuronUPEN;
-  if (url.startsWith("https://neuronup.com/br/")) return SchemaNeuronUPBR;
-  if (url.startsWith("https://neuronup.com/fr/")) return SchemaNeuronUPFR;
-  if (url.startsWith("https://neuronup.com/it/")) return SchemaNeuronUPIT;
-  if (url.startsWith("https://neuronup.com/de/")) return SchemaNeuronUPDE;  
-  if (url.startsWith("https://neuronup.com/ru/")) return SchemaNeuronUPRU;
-  if (url.startsWith("https://neuronup.com/ar/")) return SchemaNeuronUPAR;
-  if (url.startsWith("https://neuronup.com")) return SchemaNeuronUPES;
-  return SchemaOutputBasic;
+  const language = getLanguageFromURL(url);
+  
+  // Retornar componente optimizado usando UnifiedSchemaOutput
+  return ({ formData, imageDimensions }) => 
+    React.createElement(UnifiedSchemaOutput, { 
+      formData, 
+      imageDimensions, 
+      language 
+    });
 };

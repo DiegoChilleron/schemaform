@@ -96,7 +96,11 @@ export const InputForm: React.FC<InputFormProps> = ({
       )}
 
       {formData.type === "Pagina" && (
-        <PageFormInputs formData={formData} onInputChange={onInputChange} />
+        <PageFormInputs 
+          formData={formData} 
+          onInputChange={onInputChange} 
+          onYouTubeVideosChange={onYouTubeVideosChange}
+        />
       )}
 
       {formData.type === "Event" && (
