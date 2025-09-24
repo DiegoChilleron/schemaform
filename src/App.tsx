@@ -25,6 +25,7 @@ const initialFormData: FormData = {
   containsYouTubeVideo: false,
   youtubeVideos: [],
   faqItems: [],
+  faqSubType: "",
   totalTime: "",
   estimatedCost: "",
   supply: "",

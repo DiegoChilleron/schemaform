@@ -4,6 +4,7 @@ import { ArticleFormInputs } from "./SchemaTypes/ArticleFormInputs";
 import { PageFormInputs } from "./SchemaTypes/PageFormInputs";
 import { EventFormInputs } from "./SchemaTypes/EventFormInputs";
 import { FAQFormInputs } from "./SchemaTypes/FAQFormInputs";
+import { FAQJsonToAccordion } from "./SchemaTypes/FAQJsonToAccordion";
 import { HowToFormInputs } from "./SchemaTypes/HowToFormInputs";
 
 interface InputFormProps {
@@ -84,6 +85,17 @@ export const InputForm: React.FC<InputFormProps> = ({
         </button>
       </div>
       </div>
+
+      {formData.type === "FAQ" && (
+        <div className="inputForm__div">
+          <label htmlFor="faqSubType">Subtipo de FAQ:</label>
+          <select id="faqSubType" name="faqSubType" value={formData.faqSubType || ""} onChange={onInputChange}>
+            <option value="">Selecciona...</option>
+            <option value="create">Crear FAQs</option>
+            <option value="jsonToAccordion">De JSON-LD a Acordeón</option>
+          </select>
+        </div>
+      )}
       {(formData.type === "Article" || formData.type === "NewsArticle" || formData.type === "BlogPosting") && (
         <ArticleFormInputs
           formData={formData}
@@ -107,11 +119,15 @@ export const InputForm: React.FC<InputFormProps> = ({
         <EventFormInputs formData={formData} onInputChange={onInputChange} />
       )}
 
-      {formData.type === "FAQ" && (
+      {formData.type === "FAQ" && formData.faqSubType === "create" && (
         <FAQFormInputs
           formData={formData}
           onFAQItemsChange={onFAQItemsChange}
         />
+      )}
+
+      {formData.type === "FAQ" && formData.faqSubType === "jsonToAccordion" && (
+        <FAQJsonToAccordion />
       )}
 
       {formData.type === "HowTo" && (

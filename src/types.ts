@@ -27,6 +27,7 @@ export interface FormData {
     performer?: string;
     eventStatus?: string;
     faqItems: FAQItem[];
+    faqSubType?: string;
     // HowTo schema fields
     totalTime?: string;
     estimatedCost?: string;
