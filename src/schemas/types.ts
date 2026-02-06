@@ -108,8 +108,9 @@ export interface VideoObject {
   description: string;
   thumbnailUrl: string;
   contentUrl: string;
-  embedUrl: string;
+  embedUrl?: string;   // Optional - no aplica a videos subidos
   uploadDate: string;
+  duration?: string;   // Optional - formato ISO 8601
 }
 
 export interface OrganizationObject {

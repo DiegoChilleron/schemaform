@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useCallback } from "react";
-import { FormData, FAQItem, HowToStep, YouTubeVideo } from "../../types";
+import { FormData, FAQItem, HowToStep, YouTubeVideo, UploadedVideo } from "../../types";
 import { ArticleFormInputs } from "./SchemaTypes/ArticleFormInputs";
 import { PageFormInputs } from "./SchemaTypes/PageFormInputs";
 import { EventFormInputs } from "./SchemaTypes/EventFormInputs";
@@ -16,6 +16,7 @@ interface InputFormProps {
   onDateModifiedChange: (newDates: string[]) => void;
   onAuthorRRSSChange: (newRRSS: string[]) => void;
   onYouTubeVideosChange: (newVideos: YouTubeVideo[]) => void;
+  onUploadedVideosChange: (newVideos: UploadedVideo[]) => void;
   onFAQItemsChange: (items: FAQItem[]) => void;
   onHowToStepsChange: (steps: HowToStep[]) => void;
   onReset: () => void;
@@ -28,6 +29,7 @@ export const InputForm: React.FC<InputFormProps> = ({
   onDateModifiedChange,
   onAuthorRRSSChange,
   onYouTubeVideosChange,
+  onUploadedVideosChange,
   onFAQItemsChange,
   onHowToStepsChange,
   onReset,
@@ -62,28 +64,28 @@ export const InputForm: React.FC<InputFormProps> = ({
   return (
     <form>
       <div className="flex justify-between" >
-      <div className="inputForm__div">
-        <label htmlFor="type">Tipo:</label>
-        <select id="type" name="type" value={formData.type} onChange={onInputChange}>
-          <option value="">Selecciona...</option>
-          <option value="Article">Article</option>
-          <option value="NewsArticle">NewsArticle</option>
-          <option value="BlogPosting">BlogPosting</option>
-          <option value="Pagina">Pagina</option>
-          <option value="Event">Evento</option>
-          <option value="FAQ">FAQ</option>
-          <option value="HowTo">Cómo Hacer (HowTo)</option>
-        </select>
-      </div>
+        <div className="inputForm__div">
+          <label htmlFor="type">Tipo:</label>
+          <select id="type" name="type" value={formData.type} onChange={onInputChange}>
+            <option value="">Selecciona...</option>
+            <option value="Article">Article</option>
+            <option value="NewsArticle">NewsArticle</option>
+            <option value="BlogPosting">BlogPosting</option>
+            <option value="Pagina">Pagina</option>
+            <option value="Event">Evento</option>
+            <option value="FAQ">FAQ</option>
+            <option value="HowTo">Cómo Hacer (HowTo)</option>
+          </select>
+        </div>
 
-      <div className="py-3">
-        <button
-          type="button"
-          onClick={onReset}
+        <div className="py-3">
+          <button
+            type="button"
+            onClick={onReset}
           >
-          Resetear
-        </button>
-      </div>
+            Resetear
+          </button>
+        </div>
       </div>
 
       {formData.type === "FAQ" && (
@@ -104,14 +106,16 @@ export const InputForm: React.FC<InputFormProps> = ({
           onDateModifiedChange={onDateModifiedChange}
           onAuthorRRSSChange={onAuthorRRSSChange}
           onYouTubeVideosChange={onYouTubeVideosChange}
+          onUploadedVideosChange={onUploadedVideosChange}
         />
       )}
 
       {formData.type === "Pagina" && (
-        <PageFormInputs 
-          formData={formData} 
-          onInputChange={onInputChange} 
+        <PageFormInputs
+          formData={formData}
+          onInputChange={onInputChange}
           onYouTubeVideosChange={onYouTubeVideosChange}
+          onUploadedVideosChange={onUploadedVideosChange}
         />
       )}
 

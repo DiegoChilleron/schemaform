@@ -3,7 +3,7 @@ import { useState, ChangeEvent, useCallback } from "react";
 import { InputForm } from "./components/Form/InputForm";
 import { ThemeManager } from "./components/ThemeManager";
 import { getSchemaOutputComponent } from "./helpers/getSchemaOutputComponent";
-import { FormData, ImageDimensions, FAQItem, HowToStep, YouTubeVideo } from "./types.ts";
+import { FormData, ImageDimensions, FAQItem, HowToStep, YouTubeVideo, UploadedVideo } from "./types.ts";
 
 const initialFormData: FormData = {
   url: "",
@@ -29,7 +29,9 @@ const initialFormData: FormData = {
   totalTime: "",
   estimatedCost: "",
   supply: "",
-  howToSteps: []
+  howToSteps: [],
+  containsUploadedVideo: false,
+  uploadedVideos: []
 };
 
 export const App: React.FC = () => {
@@ -83,6 +85,10 @@ export const App: React.FC = () => {
     setFormData((prev) => ({ ...prev, youtubeVideos: newVideos }));
   }, []);
 
+  const handleUploadedVideosChange = useCallback((newVideos: UploadedVideo[]) => {
+    setFormData((prev) => ({ ...prev, uploadedVideos: newVideos }));
+  }, []);
+
   const SchemaOutputComponent = getSchemaOutputComponent(formData.url);
 
   return (
@@ -97,6 +103,7 @@ export const App: React.FC = () => {
           onDateModifiedChange={handleDateModifiedChange}
           onAuthorRRSSChange={handleAuthorRRSSChange}
           onYouTubeVideosChange={handleYouTubeVideosChange}
+          onUploadedVideosChange={handleUploadedVideosChange}
           onFAQItemsChange={handleFAQItemsChange}
           onHowToStepsChange={handleHowToStepsChange}
           onReset={handleReset}

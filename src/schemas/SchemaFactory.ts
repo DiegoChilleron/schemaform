@@ -1,9 +1,9 @@
 import { FormData, ImageDimensions } from "../types";
-import { 
-  ArticleSchema, 
-  PageSchema, 
-  EventSchema, 
-  FAQSchema, 
+import {
+  ArticleSchema,
+  PageSchema,
+  EventSchema,
+  FAQSchema,
   HowToSchema,
   ImageObject,
   AuthorObject
@@ -57,7 +57,7 @@ export class SchemaFactory {
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
       /youtube\.com\/watch\?.*v=([^&\n?#]+)/
     ];
-    
+
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match) {
@@ -70,10 +70,11 @@ export class SchemaFactory {
   // Generar schema para Article/NewsArticle/BlogPosting
   generateArticleSchema(): { "@context": string; "@graph": any[] } {
     const { formData, imageDimensions, language, labels } = this;
-    const { 
-      url, type, title, description, datePublished, dateModified, 
+    const {
+      url, type, title, description, datePublished, dateModified,
       section, urlImage, authorType, authorName, authorURL, authorRRSS,
-      containsYouTubeVideo, youtubeVideos 
+      containsYouTubeVideo, youtubeVideos,
+      containsUploadedVideo, uploadedVideos
     } = formData;
 
     const publishedDate = datePublished ? `${datePublished}:00+01:00` : "";
@@ -130,22 +131,35 @@ export class SchemaFactory {
           url: labels.imageLogoPlaceholder,
         },
       },
-      ...(containsYouTubeVideo && youtubeVideos.length > 0 && {
-        video: youtubeVideos
-          .filter(video => video.url.trim() !== '')
-          .map(video => {
-            const videoId = this.extractYouTubeVideoId(video.url);
-            return {
-              "@type": "VideoObject",
+      ...((containsYouTubeVideo && youtubeVideos.length > 0) || (containsUploadedVideo && uploadedVideos.length > 0) ? {
+        video: [
+          ...(containsYouTubeVideo ? youtubeVideos
+            .filter(video => video.url.trim() !== '')
+            .map(video => {
+              const videoId = this.extractYouTubeVideoId(video.url);
+              return {
+                "@type": "VideoObject" as const,
+                name: video.name || video.url,
+                description: video.description || "",
+                thumbnailUrl: videoId ? `https://i.ytimg.com/vi_webp/${videoId}/hqdefault.webp` : (urlImage || ""),
+                contentUrl: video.url,
+                embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : video.url,
+                uploadDate: publishedDate,
+              };
+            }) : []),
+          ...(containsUploadedVideo ? uploadedVideos
+            .filter(video => video.url.trim() !== '')
+            .map(video => ({
+              "@type": "VideoObject" as const,
               name: video.name || video.url,
               description: video.description || "",
-              thumbnailUrl: videoId ? `https://i.ytimg.com/vi_webp/${videoId}/hqdefault.webp` : (urlImage || ""),
+              thumbnailUrl: video.thumbnailUrl || (urlImage || ""),
               contentUrl: video.url,
-              embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : video.url,
               uploadDate: publishedDate,
-            };
-          }),
-      }),
+              ...(video.duration && { duration: video.duration }),
+            })) : []),
+        ]
+      } : {}),
     };
 
     const webPageSchema = this.generateWebPageSchema();
@@ -160,9 +174,10 @@ export class SchemaFactory {
   // Generar schema para Página
   generatePageSchema(): PageSchema {
     const { formData, labels, language } = this;
-    const { 
+    const {
       url, title, description, aggregateRating, viewCount, ratingValue,
-      containsYouTubeVideo, youtubeVideos 
+      containsYouTubeVideo, youtubeVideos,
+      containsUploadedVideo, uploadedVideos
     } = formData;
 
     return {
@@ -226,22 +241,35 @@ export class SchemaFactory {
           },
         }),
       },
-      ...(containsYouTubeVideo && youtubeVideos.length > 0 && {
-        video: youtubeVideos
-          .filter(video => video.url.trim() !== '')
-          .map(video => {
-            const videoId = this.extractYouTubeVideoId(video.url);
-            return {
-              "@type": "VideoObject",
+      ...((containsYouTubeVideo && youtubeVideos.length > 0) || (containsUploadedVideo && uploadedVideos.length > 0) ? {
+        video: [
+          ...(containsYouTubeVideo ? youtubeVideos
+            .filter(video => video.url.trim() !== '')
+            .map(video => {
+              const videoId = this.extractYouTubeVideoId(video.url);
+              return {
+                "@type": "VideoObject" as const,
+                name: video.name || video.url,
+                description: video.description || "",
+                thumbnailUrl: videoId ? `https://i.ytimg.com/vi_webp/${videoId}/hqdefault.webp` : "",
+                contentUrl: video.url,
+                embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : video.url,
+                uploadDate: new Date().toISOString(),
+              };
+            }) : []),
+          ...(containsUploadedVideo ? uploadedVideos
+            .filter(video => video.url.trim() !== '')
+            .map(video => ({
+              "@type": "VideoObject" as const,
               name: video.name || video.url,
               description: video.description || "",
-              thumbnailUrl: videoId ? `https://i.ytimg.com/vi_webp/${videoId}/hqdefault.webp` : "",
+              thumbnailUrl: video.thumbnailUrl || "",
               contentUrl: video.url,
-              embedUrl: videoId ? `https://www.youtube.com/embed/${videoId}` : video.url,
               uploadDate: new Date().toISOString(),
-            };
-          }),
-      }),
+              ...(video.duration && { duration: video.duration }),
+            })) : []),
+        ]
+      } : {}),
     };
   }
 
@@ -280,24 +308,24 @@ export class SchemaFactory {
   generateFAQSchema(): FAQSchema {
     const { formData } = this;
     const items = formData.faqItems || [];
-    
-    const mainEntityArray = items.length > 0 
+
+    const mainEntityArray = items.length > 0
       ? items.map(item => ({
-          "@type": "Question" as const,
-          name: item.question,
-          acceptedAnswer: {
-            "@type": "Answer" as const,
-            text: item.answer
-          }
-        }))
+        "@type": "Question" as const,
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer" as const,
+          text: item.answer
+        }
+      }))
       : [{
-          "@type": "Question" as const,
-          name: "No hay preguntas añadidas",
-          acceptedAnswer: {
-            "@type": "Answer" as const,
-            text: "Añade preguntas usando el formulario"
-          }
-        }];
+        "@type": "Question" as const,
+        name: "No hay preguntas añadidas",
+        acceptedAnswer: {
+          "@type": "Answer" as const,
+          text: "Añade preguntas usando el formulario"
+        }
+      }];
 
     return {
       "@context": "https://schema.org",
@@ -311,27 +339,27 @@ export class SchemaFactory {
     const { formData, imageDimensions } = this;
     const { title, description, urlImage, totalTime, estimatedCost, supply, howToSteps } = formData;
     const steps = howToSteps || [];
-    
-    const stepArray = steps.length > 0 
+
+    const stepArray = steps.length > 0
       ? steps.map((step, index) => ({
-          "@type": "HowToStep" as const,
-          position: index + 1,
-          name: step.name || `Paso ${index + 1}`,
-          text: step.text || "",
-          ...(step.url && { url: step.url }),
-          ...(step.image && { 
-            image: {
-              "@type": "ImageObject" as const,
-              url: step.image
-            }
-          })
-        }))
+        "@type": "HowToStep" as const,
+        position: index + 1,
+        name: step.name || `Paso ${index + 1}`,
+        text: step.text || "",
+        ...(step.url && { url: step.url }),
+        ...(step.image && {
+          image: {
+            "@type": "ImageObject" as const,
+            url: step.image
+          }
+        })
+      }))
       : [{
-          "@type": "HowToStep" as const,
-          position: 1,
-          name: "No hay pasos añadidos",
-          text: "Añade pasos usando el formulario"
-        }];
+        "@type": "HowToStep" as const,
+        position: 1,
+        name: "No hay pasos añadidos",
+        text: "Añade pasos usando el formulario"
+      }];
 
     const supplyList = supply ? supply.split(',').map(item => item.trim()).filter(item => item) : [];
 
@@ -350,7 +378,7 @@ export class SchemaFactory {
       }),
       ...(totalTime && { totalTime }),
       ...(estimatedCost && { estimatedCost: { "@type": "MonetaryAmount", value: estimatedCost } }),
-      ...(supplyList.length > 0 && { 
+      ...(supplyList.length > 0 && {
         supply: supplyList.map(item => ({
           "@type": "HowToSupply",
           name: item
