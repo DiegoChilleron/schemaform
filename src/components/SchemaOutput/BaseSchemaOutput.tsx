@@ -89,7 +89,7 @@ export const BaseSchemaOutput: React.FC<BaseSchemaOutputProps> = ({
             Copiar todo
           </button>
           <button
-            onClick={() => window.open('https://search.google.com/test/rich-results?hl=es', '_blank')}
+            onClick={() => window.open('https://search.google.com/test/rich-results?hl=es', '_blank', 'noopener,noreferrer')}
           >
             Validar
           </button>

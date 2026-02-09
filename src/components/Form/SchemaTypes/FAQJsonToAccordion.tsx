@@ -17,8 +17,10 @@ export const FAQJsonToAccordion: React.FC<FAQJsonToAccordionProps> = () => {
 
   // Función para generar número base aleatorio que empiece con 4 y termine en 0
   const generateBaseUUID = (): number => {
-    // Generar 4 dígitos aleatorios para el medio (xxxx)
-    const middleDigits = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    // Generar 4 dígitos aleatorios para el medio (xxxx) usando crypto API
+    const randomArray = new Uint32Array(1);
+    crypto.getRandomValues(randomArray);
+    const middleDigits = (randomArray[0] % 10000).toString().padStart(4, '0');
     // Combinar: 4 + 4 dígitos aleatorios + 0
     return parseInt(`4${middleDigits}0`);
   };
@@ -44,7 +46,7 @@ export const FAQJsonToAccordion: React.FC<FAQJsonToAccordionProps> = () => {
       }
 
       const jsonData = JSON.parse(cleanInput);
-      
+
       // Verificar que sea un FAQPage schema
       if (jsonData['@type'] !== 'FAQPage') {
         throw new Error('El JSON no es un schema de tipo FAQPage');
@@ -82,7 +84,7 @@ export const FAQJsonToAccordion: React.FC<FAQJsonToAccordionProps> = () => {
       // UUID secuencial a partir del número base
       const uuid = baseUUID + index;
       const id = generateId(item.question, index);
-      
+
       return `    <!-- wp:pb/accordion-item {"titleTag":"h3","uuid":${uuid}} -->
     <div class="wp-block-pb-accordion-item c-accordion__item js-accordion-item no-js" data-initially-open="false"
         data-click-to-close="true" data-auto-close="true" data-scroll="false" data-scroll-offset="0"
@@ -121,7 +123,7 @@ ${accordionItems}
     try {
       setError("");
       const faqItems = parseJsonLD(jsonInput);
-      
+
       if (faqItems.length === 0) {
         setError("No se encontraron preguntas válidas en el JSON-LD");
         setHtmlOutput("");
